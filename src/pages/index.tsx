@@ -34,13 +34,19 @@ export default function Roulette() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-black text-white p-4 relative">
-      <h1 className="text-5xl font-extrabold mb-6 text-gold drop-shadow-md">Dejny's Roulette</h1>
+      <h1 className="text-5xl text-center font-mono font-semibold mb-6 text-yellow-400 drop-shadow-md">Dejny's Roulette</h1>
       <motion.div
-        className={`w-44 h-44 ${getColor(result)} rounded-full border-4 flex items-center justify-center text-3xl font-bold shadow-xl`}
+        className={`w-44 h-44 ${getColor(result)} rounded-full border-4 flex items-center justify-center text-3xl font-bold shadow-xl overflow-hidden relative`}
         animate={{ rotate: spinning ? [0, 3600, 7200, 10800, 14400, 14600, 14700, 14750, 14775, 14800] : 0 }}
-        transition={{ duration: 3, ease: "easeOut" }}
+        transition={{ duration: 3, ease: "easeInOut" }}
       >
-        {spinning ? "🎡" : result !== null ? result : "🎰"}
+        {spinning ? (
+          <motion.div
+            className="w-10 h-10 border-4 border-t-transparent border-white rounded-full animate-spin"
+          />
+        ) : (
+          result !== null ? result : "🎰"
+        )}
       </motion.div>
       <Button
         onClick={spinWheel}
