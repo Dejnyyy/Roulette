@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Button from "./components/button";
+import Confetti from "react-confetti";
 
 const numbers = Array.from({ length: 37 }, (_, i) => i); // European roulette (0-36)
 
@@ -10,16 +11,20 @@ export default function Roulette() {
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState<number | null>(null);
   const [history, setHistory] = useState<number[]>([]);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const spinWheel = () => {
     if (spinning) return;
     setSpinning(true);
+    setShowConfetti(false);
     const randomIndex = Math.floor(Math.random() * numbers.length);
     setTimeout(() => {
       const newResult = numbers[randomIndex];
       setResult(newResult);
       setHistory((prev) => [newResult, ...prev.slice(0, 4)]); // Keep last 5 numbers
       setSpinning(false);
+      setTimeout(() => setShowConfetti(true), 300); // Delay confetti after animation completes
+      setTimeout(() => setShowConfetti(false), 3300);
     }, 3000);
   };
 
@@ -34,11 +39,12 @@ export default function Roulette() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-black text-white p-4 relative">
-      <h1 className="text-5xl text-center font-mono font-semibold mb-6 text-yellow-400 drop-shadow-md">Dejny's Roulette</h1>
+      {showConfetti && <Confetti numberOfPieces={300} recycle={false} colors={["#FFFFFF", "#111111", "#A020F0", "#D4AF37"]} />} 
+      <h1 className="text-5xl font-extrabold mb-6 text-gold drop-shadow-md">Dejny's Roulette</h1>
       <motion.div
         className={`w-44 h-44 ${getColor(result)} rounded-full border-4 flex items-center justify-center text-3xl font-bold shadow-xl overflow-hidden relative`}
         animate={{ rotate: spinning ? [0, 3600, 7200, 10800, 14400, 14600, 14700, 14750, 14775, 14800] : 0 }}
-        transition={{ duration: 3, ease: "easeInOut" }}
+        transition={{ duration: 3, ease: "easeOut" }}
       >
         {spinning ? (
           <motion.div
