@@ -28,7 +28,7 @@ export default function RouletteWheel() {
     setSpinning(true);
     setShowConfetti(false);
     
-    setResult(null); // 👈 Reset result immediately before spinning
+    setResult(null);
   
     const finalIndex = Math.floor(Math.random() * wheelNumbers.length);
     const newResult = wheelNumbers[finalIndex];
@@ -44,7 +44,7 @@ export default function RouletteWheel() {
   
       if (spinsCompleted >= totalSpins && currentIndex % wheelNumbers.length === finalIndex) {
         setTimeout(() => {
-          setResult(newResult); // 👈 Now update with the correct result
+          setResult(newResult); 
           setHistory((prev) => [newResult, ...prev.slice(0, 4)]);
           calculateWinnings(newResult);
         }, 300);
@@ -61,13 +61,13 @@ export default function RouletteWheel() {
   };
   
 
-    const redNumbers = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]); // Actual red numbers
+    const redNumbers = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
 
     const calculateWinnings = (number: number) => {
       let winnings = 0;
     
       if (betType === "number" && betValue === number) {
-        winnings = betAmount * 35;
+        winnings = betAmount * 15;
       } else if (betType === "color") {
         const isRed = redNumbers.has(number);
         if ((betValue === "red" && isRed) || (betValue === "black" && !isRed && number !== 0)) {
@@ -102,7 +102,7 @@ export default function RouletteWheel() {
     <div className="flex flex-col items-center justify-center bg-gradient-to-b from-gray-900 to-black text-white ">
       {showConfetti && <Confetti numberOfPieces={600} recycle={false} />}
       <h1 className="text-5xl font-extrabold mb-6 text-gold drop-shadow-md">Dejny&apos;s Roulette</h1>
-      <p className="absolute top-4 left-4 px-4 py-2 bg-purple-600 rounded-xl font-bold">
+      <p className="absolute shadow-md hover:scale-110 transition-all duration-150 ease-in-out cursor-pointer  shadow-purple-600 top-4 left-4 px-4 py-2 bg-purple-600 rounded-xl font-bold">
         Balance: <span className="">{balance}</span>
       </p>
       {/* ROULETTE WHEEL */}
