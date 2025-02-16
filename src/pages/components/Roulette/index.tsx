@@ -74,9 +74,11 @@ export default function RouletteWheel({ onResult }: RouletteProps) {
         if ((betValue === "red" && isRed) || (betValue === "black" && !isRed && number !== 0)) {
           winnings = betAmount * 2;
         }
-      } else if (betType === "parity") {
-        if ((betValue === "even" && number % 2 === 0 && number !== 0) || (betValue === "odd" && number % 2 !== 0)) {
-          winnings = betAmount * 2;
+      }  else if (betType === "parity") {
+        if (number !== 0) { // Ensures 0 does not count as even or odd
+          if ((betValue === "even" && number % 2 === 0) || (betValue === "odd" && number % 2 !== 0)) {
+            winnings = betAmount * 2;
+          }
         }
       }
     
@@ -101,7 +103,9 @@ export default function RouletteWheel({ onResult }: RouletteProps) {
     <div className="flex flex-col items-center justify-center bg-gradient-to-b from-gray-900 to-black text-white ">
       {showConfetti && <Confetti numberOfPieces={600} recycle={false} />}
       <h1 className="text-5xl font-extrabold mb-6 text-gold drop-shadow-md">Dejny's Roulette</h1>
-
+      <p className="absolute top-4 left-4 px-4 py-2 bg-purple-600 rounded-xl font-bold">
+        Balance: <span className="">{balance}</span>
+      </p>
       {/* ROULETTE WHEEL */}
       <div className="relative w-[500px] h-[500px] flex items-center justify-center">
         <div className="absolute w-full h-full border-8 border-dotted rounded-full flex items-center justify-center text-3xl font-bold">
@@ -127,6 +131,7 @@ export default function RouletteWheel({ onResult }: RouletteProps) {
 
         {/* Betting Component */}
         <div className="absolute left-0 ml-4">
+            
         <Betting 
                 balance={balance} 
                 betAmount={betAmount} 
@@ -155,9 +160,7 @@ export default function RouletteWheel({ onResult }: RouletteProps) {
             {num}
           </div>
         ))}
-        {loadingHistory && (
-          <motion.div className="w-10 h-10 border-4 border-t-transparent border-white rounded-full animate-spin" />
-        )}
+       
       </div>
     </div>
   );
