@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState,useEffect } from "react";
+import React, { useEffect } from "react";
 interface BettingProps {
     balance: number;
     betAmount: number;
@@ -42,19 +42,37 @@ const Betting: React.FC<BettingProps> = ({
   return (
     <div className="mb-4 ml-4 md:ml-8 rounded-xl  border  p-8 flex flex-col items-center font-mono font-semibold text-white">
       <p>
-        Bet - <span className="text-yellow-400 font-semibold font-mono">{betAmount}</span>
+        Bet - <span className="text-yellow-400 font-semibold font-mono"> {/* Bet Amount Manual Input */}
+  <input
+    type="number"
+    min="1"
+    max={balance}
+    className="my-4 bg-transparent text-center disabled:opacity-50 disabled:cursor-not-allowed"
+    value={betAmount}
+    onChange={(e) => {
+      let val = Number(e.target.value);
+      if (val > balance) val = balance; // Prevent bet from exceeding balance
+      if (val < 1) val = 1; // Prevent bet from going below 1
+      setBetAmount(val);
+    }}
+    disabled={spinning}
+  /></span>
       </p>
+{/* Seamless Bet Input */}
+<div className="flex items-center gap-2 w-full">
+  {/* Bet Amount Slider */}
+  <input
+    type="range"
+    min="1"
+    max={balance}
+    className="w-40 cursor-pointer appearance-none bg-transparent"
+    value={betAmount}
+    onChange={(e) => setBetAmount(Number(e.target.value))}
+    disabled={spinning}
+  />
 
-      {/* Bet Amount Slider */}
-      <input
-        type="range"
-        min="1"
-        max={balance}
-        className="w-40 my-2 cursor-pointer"
-        value={betAmount}
-        onChange={(e) => setBetAmount(Number(e.target.value))}
-        disabled={spinning}
-      />
+ 
+</div>
       <style jsx>{`
         input[type="range"] {
           -webkit-appearance: none;

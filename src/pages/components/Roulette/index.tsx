@@ -107,7 +107,7 @@ export default function RouletteWheel() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center bg-gradient-to-b from-gray-900 to-black text-white ">
+    <div className="flex flex-col items-center justify-center  text-white ">
       {showConfetti && <Confetti numberOfPieces={600} recycle={false} />}
       <h1 className="text-5xl font-extrabold mb-6 text-gold drop-shadow-md">Dejny&apos;s Roulette</h1>
       <p className="absolute shadow-md hover:scale-110 transition-all duration-150 ease-in-out cursor-pointer   top-4 left-4 px-4 py-2 bg-gradient-to-tr from-white/30  to-black rounded-xl font-bold">
