@@ -61,7 +61,7 @@ export default function Roulette() {
     if (num === null) return "bg-gray-700";
     if (num === 0) return "bg-green-500";
     const baseColor = wheelNumbers.indexOf(num) % 2 === 0 ? "bg-black" : "bg-red-500";
-    return isHighlighted ? "bg-yellow-400" : baseColor;
+    return isHighlighted ? "bg-yellow-400 border-yellow-400" : baseColor;
   };
 
   const getBorderColor = (num: number | null) => {
