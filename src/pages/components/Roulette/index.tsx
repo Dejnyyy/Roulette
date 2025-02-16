@@ -29,39 +29,44 @@ export default function RouletteWheel({ onResult }: RouletteProps) {
 
   const spinWheel = () => {
     if (spinning) return;
+    
     setSpinning(true);
     setShowConfetti(false);
     setLoadingHistory(true);
-
+    
+    setResult(null); // 👈 Reset result immediately before spinning
+  
     const finalIndex = Math.floor(Math.random() * wheelNumbers.length);
     const newResult = wheelNumbers[finalIndex];
-
+  
     let currentIndex = result !== null ? wheelNumbers.indexOf(result) : 0;
     let totalSpins = wheelNumbers.length * 3 + finalIndex + Math.floor(Math.random() * 10);
     let spinsCompleted = 0;
     let intervalTime = 20;
-
-    const spin = () => {
-        setHighlightIndex(currentIndex % wheelNumbers.length);
-        spinsCompleted++;
   
-        if (spinsCompleted >= totalSpins && currentIndex % wheelNumbers.length === finalIndex) {
-          setTimeout(() => {
-            setResult(newResult);
-            setHistory((prev) => [newResult, ...prev.slice(0, 4)]);
-            calculateWinnings(newResult);
-          }, 300);
-          setSpinning(false);
-          setShowConfetti(true);
-          setTimeout(() => setShowConfetti(false), 3300);
-          return;
-        }
-        intervalTime = Math.min(25, intervalTime * 10);
-        setTimeout(spin, intervalTime);
-        currentIndex++;
-      };
-      spin();
+    const spin = () => {
+      setHighlightIndex(currentIndex % wheelNumbers.length);
+      spinsCompleted++;
+  
+      if (spinsCompleted >= totalSpins && currentIndex % wheelNumbers.length === finalIndex) {
+        setTimeout(() => {
+          setResult(newResult); // 👈 Now update with the correct result
+          setHistory((prev) => [newResult, ...prev.slice(0, 4)]);
+          calculateWinnings(newResult);
+        }, 300);
+        setSpinning(false);
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 3300);
+        return;
+      }
+      intervalTime = Math.min(25, intervalTime * 10);
+      setTimeout(spin, intervalTime);
+      currentIndex++;
     };
+    spin();
+  };
+  
+
     const redNumbers = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]); // Actual red numbers
 
     const calculateWinnings = (number: number) => {
@@ -120,12 +125,16 @@ export default function RouletteWheel({ onResult }: RouletteProps) {
               {num}
             </motion.div>
           ))}
-          <div className="relative w-full h-full flex items-center justify-center">
-            {/* CENTER RESULT NUMBER */}
-            <div className={`w-20 h-20 flex items-center justify-center text-white rounded-full font-bold text-2xl ${getColor(result)} ${getBorderColor(result)} border-4`}>
-              {spinning ? "" : result !== null ? result : "🎰"}
-            </div>
-          </div>
+         <div className="relative w-full h-full flex items-center justify-center">
+  {/* CENTER RESULT NUMBER */}
+  <div
+    className={`w-20 h-20 flex items-center justify-center text-white rounded-full font-bold text-2xl 
+      ${getColor(spinning ? null : result)} ${getBorderColor(spinning ? null : result)} border-4`}
+  >
+    {spinning ? "" : result !== null ? result : ""}
+  </div>
+</div>
+
         </div>
       </div>
 

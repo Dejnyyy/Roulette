@@ -13,18 +13,17 @@ interface BettingProps {
   numberCount: number;
   spinning: boolean;
 }
-
-        const Betting: React.FC<BettingProps> = ({
-        balance,
-        betAmount,
-        setBetAmount,
-        betType,
-        setBetType,
-        betValue,
-        setBetValue,
-        numberCount,
-        spinning,
-        }) => {
+    const Betting: React.FC<BettingProps> = ({
+    balance,
+    betAmount,
+    setBetAmount,
+    betType,
+    setBetType,
+    betValue,
+    setBetValue,
+    numberCount,
+    spinning,
+    }) => {
         return (
             <div className="mb-4 flex flex-col items-center text-white">
                 <p>
@@ -46,14 +45,14 @@ interface BettingProps {
   disabled={spinning}
 >
   <option value="number">Number</option>
-  <option value="color">Red/Black</option>
+  <option value="color">Color</option>
   <option value="parity">Even/Odd</option>
 </select>
 
 {betType === "number" ? (
   <input
     type="number"
-    className="w-32 bg-gray-800 text-white p-2 my-2 rounded-lg border border-gray-600 shadow-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+    className="w-40 bg-gray-800 text-white p-2 my-2 rounded-lg border border-gray-600 shadow-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
     placeholder="Choose Number"
     min="0"
     max={numberCount - 1}
