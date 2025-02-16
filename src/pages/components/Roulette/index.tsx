@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import Confetti from "react-confetti";
 import Button from "../button";
+import Betting from "../Betting";
 
 const wheelNumbers = [
   0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 
@@ -15,6 +16,10 @@ interface RouletteProps {
 }
 
 export default function RouletteWheel({ onResult }: RouletteProps) {
+    const [balance, setBalance] = useState(1000);
+    const [betAmount, setBetAmount] = useState(0);
+    const [betType, setBetType] = useState("number");
+    const [betValue, setBetValue] = useState<number | "red" | "black" | "even" | "odd" | null>(null);  
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState<number | null>(null);
   const [history, setHistory] = useState<number[]>([]);
@@ -37,29 +42,48 @@ export default function RouletteWheel({ onResult }: RouletteProps) {
     let intervalTime = 20;
 
     const spin = () => {
-      setHighlightIndex(currentIndex % wheelNumbers.length);
-      spinsCompleted++;
-
-      if (spinsCompleted >= totalSpins && currentIndex % wheelNumbers.length === finalIndex) {
-        setTimeout(() => {
-          setResult(newResult);
-          setHistory((prev) => [newResult, ...prev.slice(0, 4)]);
-          setLoadingHistory(false);
-          if (onResult) onResult(newResult); // Trigger callback
-        }, 300);
-        setSpinning(false);
-        setShowConfetti(true);
-        setTimeout(() => setShowConfetti(false), 3300);
-        return;
-      }
-
-      intervalTime = Math.min(25, intervalTime * 10);
-      setTimeout(spin, intervalTime);
-      currentIndex++;
+        setHighlightIndex(currentIndex % wheelNumbers.length);
+        spinsCompleted++;
+  
+        if (spinsCompleted >= totalSpins && currentIndex % wheelNumbers.length === finalIndex) {
+          setTimeout(() => {
+            setResult(newResult);
+            setHistory((prev) => [newResult, ...prev.slice(0, 4)]);
+            calculateWinnings(newResult);
+          }, 300);
+          setSpinning(false);
+          setShowConfetti(true);
+          setTimeout(() => setShowConfetti(false), 3300);
+          return;
+        }
+        intervalTime = Math.min(25, intervalTime * 10);
+        setTimeout(spin, intervalTime);
+        currentIndex++;
+      };
+      spin();
     };
+    const redNumbers = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]); // Actual red numbers
 
-    spin();
-  };
+    const calculateWinnings = (number: number) => {
+      let winnings = 0;
+    
+      if (betType === "number" && betValue === number) {
+        winnings = betAmount * 35;
+      } else if (betType === "color") {
+        const isRed = redNumbers.has(number);
+        if ((betValue === "red" && isRed) || (betValue === "black" && !isRed && number !== 0)) {
+          winnings = betAmount * 2;
+        }
+      } else if (betType === "parity") {
+        if ((betValue === "even" && number % 2 === 0 && number !== 0) || (betValue === "odd" && number % 2 !== 0)) {
+          winnings = betAmount * 2;
+        }
+      }
+    
+      setBalance((prev) => prev + winnings - betAmount);
+    };
+    
+    
 
   const getColor = (num: number | null, isHighlighted: boolean = false) => {
     if (num === null) return "bg-gray-700";
@@ -101,11 +125,25 @@ export default function RouletteWheel({ onResult }: RouletteProps) {
         </div>
       </div>
 
+        {/* Betting Component */}
+        <div className="absolute left-0 ml-4">
+        <Betting 
+                balance={balance} 
+                betAmount={betAmount} 
+                setBetAmount={setBetAmount} 
+                betType={betType} 
+                setBetType={setBetType} 
+                betValue={betValue} 
+                setBetValue={setBetValue} 
+                numberCount={wheelNumbers.length}
+                spinning={spinning}
+            />
+        </div>
       {/* SPIN BUTTON */}
       <Button
         onClick={spinWheel}
         className="mt-8 px-6 py-3 bg-gold text-black font-semibold rounded-xl shadow-lg hover:shadow-2xl transition duration-300 ease-in-out disabled:opacity-50"
-        disabled={spinning}
+        disabled={spinning || betAmount <= 0 || betValue === null}
       >
         {spinning ? "Spinning..." : "Spin the Wheel"}
       </Button>
