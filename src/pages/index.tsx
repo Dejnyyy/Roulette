@@ -16,28 +16,37 @@ export default function Roulette() {
   const [history, setHistory] = useState<number[]>([]);
   const [showConfetti, setShowConfetti] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState<number>(0);
+  const [loadingHistory, setLoadingHistory] = useState(false);
 
   const spinWheel = () => {
     if (spinning) return;
     setSpinning(true);
     setShowConfetti(false);
+    setLoadingHistory(true);
     
     const finalIndex = Math.floor(Math.random() * wheelNumbers.length);
     const newResult = wheelNumbers[finalIndex];
     
     let currentIndex = result !== null ? wheelNumbers.indexOf(result) : 0; // Start from last chosen number
+    const totalSpins = wheelNumbers.length + finalIndex; // Ensure at least one full rotation
+    let spinsCompleted = 0;
+
     const spinInterval = setInterval(() => {
       setHighlightIndex(currentIndex % wheelNumbers.length);
-      if (currentIndex % wheelNumbers.length === finalIndex) {
+      if (spinsCompleted >= totalSpins && currentIndex % wheelNumbers.length === finalIndex) {
         clearInterval(spinInterval);
         setResult(newResult);
-        setHistory((prev) => [newResult, ...prev.slice(0, 4)]);
+        setTimeout(() => {
+          setHistory((prev) => [newResult, ...prev.slice(0, 4)]);
+          setLoadingHistory(false);
+        }, 300);
         setSpinning(false);
         setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 3300);
       }
       currentIndex++;
-    }, 100);
+      spinsCompleted++;
+    }, 30);
   };
 
   // Determine color based on the roulette number
@@ -50,7 +59,7 @@ export default function Roulette() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-black text-white p-4 relative">
-      {showConfetti && <Confetti numberOfPieces={300} recycle={false} colors={["#FFD700", "#FF0000", "#00FF00", "#0000FF"]} />} 
+      {showConfetti && <Confetti numberOfPieces={600} recycle={false} colors={["#FFD700", "#800080", "#FFFF00", "#008000", "#FF0000", "#000000", "#FFFFFF"]} />} 
       <h1 className="text-5xl font-extrabold mb-6 text-gold drop-shadow-md">Dejny's Roulette</h1>
       <div className="relative w-80 h-80 flex items-center justify-center">
         <div className="absolute w-full h-full bg-black rounded-full border-4 flex items-center justify-center text-3xl font-bold shadow-xl">
@@ -67,7 +76,7 @@ export default function Roulette() {
             </motion.div>
           ))}
           <div className="relative w-full h-full flex items-center justify-center">
-            <div className="absolute top-2 w-4 h-6" />
+            <div className="absolute top-2 w-4 h-6 " />
             <div className={`w-16 h-16 flex items-center justify-center text-white rounded-full font-bold text-2xl border-4 ${getColor(result)}`}> 
               {spinning ? "" : result !== null ? result : "🎰"}
             </div>
@@ -88,6 +97,11 @@ export default function Roulette() {
             {num}
           </div>
         ))}
+        {loadingHistory && (
+          <motion.div
+            className="w-10 h-10 border-4 border-t-transparent border-white rounded-full animate-spin"
+          />
+        )}
       </div>
     </div>
   );
