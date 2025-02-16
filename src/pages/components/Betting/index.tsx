@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 interface BettingProps {
     balance: number;
     betAmount: number;
@@ -25,7 +25,11 @@ const Betting: React.FC<BettingProps> = ({
   numberCount,
   spinning,
 }) => {
-
+    useEffect(() => {
+        if (betAmount > balance) {
+          setBetAmount(balance); // 👈 Automatically adjusts to balance
+        }
+      }, [betAmount, balance]);
     const increaseBet = () => {
         setBetAmount((prev) => Math.min(prev * 2, balance));
       };
