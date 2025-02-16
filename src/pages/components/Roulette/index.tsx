@@ -11,11 +11,7 @@ const wheelNumbers = [
   20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26
 ];
 
-interface RouletteProps {
-  onResult?: (result: number) => void; // Optional callback when result is determined
-}
-
-export default function RouletteWheel({ onResult }: RouletteProps) {
+export default function RouletteWheel() {
     const [balance, setBalance] = useState(1000);
     const [betAmount, setBetAmount] = useState(0);
     const [betType, setBetType] = useState("number");
@@ -25,14 +21,12 @@ export default function RouletteWheel({ onResult }: RouletteProps) {
   const [history, setHistory] = useState<number[]>([]);
   const [showConfetti, setShowConfetti] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState<number>(0);
-  const [loadingHistory, setLoadingHistory] = useState(false);
 
   const spinWheel = () => {
     if (spinning) return;
     
     setSpinning(true);
     setShowConfetti(false);
-    setLoadingHistory(true);
     
     setResult(null); // 👈 Reset result immediately before spinning
   
@@ -40,7 +34,7 @@ export default function RouletteWheel({ onResult }: RouletteProps) {
     const newResult = wheelNumbers[finalIndex];
   
     let currentIndex = result !== null ? wheelNumbers.indexOf(result) : 0;
-    let totalSpins = wheelNumbers.length * 3 + finalIndex + Math.floor(Math.random() * 10);
+    const totalSpins = wheelNumbers.length * 3 + finalIndex + Math.floor(Math.random() * 10);
     let spinsCompleted = 0;
     let intervalTime = 20;
   
@@ -107,7 +101,7 @@ export default function RouletteWheel({ onResult }: RouletteProps) {
   return (
     <div className="flex flex-col items-center justify-center bg-gradient-to-b from-gray-900 to-black text-white ">
       {showConfetti && <Confetti numberOfPieces={600} recycle={false} />}
-      <h1 className="text-5xl font-extrabold mb-6 text-gold drop-shadow-md">Dejny's Roulette</h1>
+      <h1 className="text-5xl font-extrabold mb-6 text-gold drop-shadow-md">Dejny&apos;s Roulette</h1>
       <p className="absolute top-4 left-4 px-4 py-2 bg-purple-600 rounded-xl font-bold">
         Balance: <span className="">{balance}</span>
       </p>
