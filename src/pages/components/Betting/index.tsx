@@ -55,6 +55,56 @@ const Betting: React.FC<BettingProps> = ({
         onChange={(e) => setBetAmount(Number(e.target.value))}
         disabled={spinning}
       />
+      <style jsx>{`
+        input[type="range"] {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 100%;
+          height: 8px;
+          background: linear-gradient(to right, #facc15, #22c55e); /* Yellow to Green */
+          border-radius: 10px;
+          outline: none;
+          transition: opacity 0.2s;
+        }
+      
+      
+        input[type="range"]::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 18px;
+          height: 18px;
+          background: white;
+          border: 2px solid #22c55e; /* Green border */
+          border-radius: 50%;
+          cursor: pointer;
+          transition: transform 0.2s;
+        }
+      
+        input[type="range"]:hover::-webkit-slider-thumb {
+          transform: scale(1.2);
+        }
+      
+        input[type="range"]::-moz-range-track {
+          width: 100%;
+          height: 8px;
+          background: linear-gradient(to right, #facc15, #22c55e); /* Yellow to Green */
+          border-radius: 10px;
+        }
+      
+        input[type="range"]::-moz-range-thumb {
+          width: 18px;
+          height: 18px;
+          background: white;
+          border: 2px solid #22c55e; /* Green border */
+          border-radius: 50%;
+          cursor: pointer;
+          transition: transform 0.2s;
+        }
+      
+        input[type="range"]:hover::-moz-range-thumb {
+          transform: scale(1.2);
+        }
+      `}</style>
 
       {/* Bet Adjustment Buttons */}
       <div className="flex gap-4 mt-2">
