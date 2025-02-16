@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Confetti from "react-confetti";
 import Button from "../button";
@@ -21,7 +21,15 @@ export default function RouletteWheel() {
   const [history, setHistory] = useState<number[]>([]);
   const [showConfetti, setShowConfetti] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState<number>(0);
-
+  useEffect(() => {
+    if (betType === "number") {
+      setBetValue(0); // Default to first number on wheel
+    } else if (betType === "color") {
+      setBetValue("red"); // Default to "red" for color bets
+    } else if (betType === "parity") {
+      setBetValue("even"); // Default to "even" for parity bets
+    }
+  }, [betType]);
   const spinWheel = () => {
     if (spinning) return;
     
@@ -102,8 +110,8 @@ export default function RouletteWheel() {
     <div className="flex flex-col items-center justify-center bg-gradient-to-b from-gray-900 to-black text-white ">
       {showConfetti && <Confetti numberOfPieces={600} recycle={false} />}
       <h1 className="text-5xl font-extrabold mb-6 text-gold drop-shadow-md">Dejny&apos;s Roulette</h1>
-      <p className="absolute shadow-md hover:scale-110 transition-all duration-150 ease-in-out cursor-pointer  shadow-purple-600 top-4 left-4 px-4 py-2 bg-purple-600 rounded-xl font-bold">
-        Balance: <span className="">{balance}</span>
+      <p className="absolute shadow-md hover:scale-110 transition-all duration-150 ease-in-out cursor-pointer   top-4 left-4 px-4 py-2 bg-gradient-to-tr from-white/30  to-black rounded-xl font-bold">
+        Balance: <span className="font-mono">{balance}</span>
       </p>
       {/* ROULETTE WHEEL */}
       <div className="relative w-[500px] h-[500px] flex items-center justify-center">
@@ -172,10 +180,6 @@ export default function RouletteWheel() {
     </div>
   )}
 </div>
-
-
-
-
       {/* HISTORY BAR */}
       <div className="absolute bottom-4 right-4 flex gap-2">
         {history.map((num, index) => (

@@ -36,7 +36,7 @@ const Betting: React.FC<BettingProps> = ({
       
 
   return (
-    <div className="mb-4 flex flex-col items-center text-white">
+    <div className="mb-4 ml-4 md:ml-8 rounded-xl  border  p-8 flex flex-col items-center font-mono font-semibold text-white">
       <p>
         Bet - <span className="text-yellow-400 font-semibold font-mono">{betAmount}</span>
       </p>
@@ -46,7 +46,7 @@ const Betting: React.FC<BettingProps> = ({
         type="range"
         min="1"
         max={balance}
-        className="w-64 my-2 cursor-pointer"
+        className="w-40 my-2 cursor-pointer"
         value={betAmount}
         onChange={(e) => setBetAmount(Number(e.target.value))}
         disabled={spinning}
