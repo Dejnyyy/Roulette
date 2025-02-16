@@ -40,7 +40,7 @@ interface BettingProps {
         disabled={spinning}
         />
 <select
-  className="w-40 bg-gray-800 text-white p-2 rounded-lg border border-gray-600 shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed"
+  className="w-40 bg-gray-800 text-white p-2 rounded-lg border border-gray-600 shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
   value={betType}
   onChange={(e) => setBetType(e.target.value)}
   disabled={spinning}
@@ -53,7 +53,7 @@ interface BettingProps {
 {betType === "number" ? (
   <input
     type="number"
-    className="w-32 bg-gray-800 text-white p-2 my-2 rounded-lg border border-gray-600 shadow-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed"
+    className="w-32 bg-gray-800 text-white p-2 my-2 rounded-lg border border-gray-600 shadow-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
     placeholder="Choose Number"
     min="0"
     max={numberCount - 1}
@@ -68,7 +68,7 @@ interface BettingProps {
   />
 ) : (
   <select
-    className="w-40 bg-gray-800 text-white p-2 my-2 rounded-lg border border-gray-600 shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed"
+    className="w-40 bg-gray-800 text-white p-2 my-2 rounded-lg border border-gray-600 shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
     value={betValue as string}
     onChange={(e) =>
       setBetValue(e.target.value as "red" | "black" | "even" | "odd")

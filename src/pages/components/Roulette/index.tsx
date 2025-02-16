@@ -145,13 +145,33 @@ export default function RouletteWheel({ onResult }: RouletteProps) {
             />
         </div>
       {/* SPIN BUTTON */}
-      <Button
-        onClick={spinWheel}
-        className="mt-8 px-6 py-3 bg-gold text-black font-semibold rounded-xl shadow-lg hover:shadow-2xl transition duration-300 ease-in-out disabled:opacity-50"
-        disabled={spinning || betAmount <= 0 || betValue === null}
-      >
-        {spinning ? "Spinning..." : "Spin the Wheel"}
-      </Button>
+      <div className="relative flex flex-col items-center group">
+  <Button
+    onClick={spinWheel}
+    className="mt-8 px-6 py-3 bg-gold text-black font-semibold rounded-xl shadow-lg hover:shadow-2xl transition duration-300 ease-in-out disabled:opacity-50 relative"
+    disabled={spinning || betAmount <= 0 || betValue === null || betAmount > balance}
+  >
+    {spinning ? "Spinning..." : "Spin the Wheel"}
+  </Button>
+
+  {/* Render Tooltip ONLY if button is disabled */}
+  {(spinning || betAmount <= 0 || betValue === null || betAmount > balance) && (
+    <div className="absolute bottom-[35px] bg-black text-white text-xs p-2 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      {spinning
+        ? "Wait! The wheel is already spinning..."
+        : betAmount <= 0
+        ? "You must place a bet before spinning!"
+        : betValue === null
+        ? "Select a bet type before spinning!"
+        : betAmount > balance
+        ? "Not enough balance for this bet!"
+        : ""}
+    </div>
+  )}
+</div>
+
+
+
 
       {/* HISTORY BAR */}
       <div className="absolute bottom-4 right-4 flex gap-2">
