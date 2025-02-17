@@ -38,6 +38,9 @@ const Betting: React.FC<BettingProps> = ({
       const decreaseBet = () => {
         setBetAmount((prev) => Math.max(1, Math.floor(prev / 2)));
       };
+      const maxBet = () => {
+        setBetAmount(balance)
+      }
       
 
   return (
@@ -142,6 +145,14 @@ const Betting: React.FC<BettingProps> = ({
         >
           ×2
         </button>
+        <button
+        onClick={maxBet}
+          disabled={spinning}
+          className="px-4 py-2 bg-gray-700 text-white font-semibold rounded-lg border border-gray-600 shadow-md hover:bg-gray-600 disabled:opacity-50"
+        >
+          Max
+        </button>
+
       </div>
 
       {/* Bet Type Selection */}
