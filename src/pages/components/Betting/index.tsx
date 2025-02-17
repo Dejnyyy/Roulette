@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 interface BettingProps {
     balance: number;
     betAmount: number;
-    setBetAmount: React.Dispatch<React.SetStateAction<number>>; // ✅ FIXED!
+    setBetAmount: React.Dispatch<React.SetStateAction<number>>; 
     betType: string;
     setBetType: (type: string) => void;
     betValue: number | "red" | "black" | "even" | "odd" | null;

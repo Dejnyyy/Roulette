@@ -12,7 +12,7 @@ const wheelNumbers = [
 ];
 
 export default function RouletteWheel() {
-    let [balance, setBalance] = useState(1000);
+    const [balance, setBalance] = useState(1000);
     const [betAmount, setBetAmount] = useState(0);
     const [betType, setBetType] = useState("number");
     const [betValue, setBetValue] = useState<number | "red" | "black" | "even" | "odd" | null>(null);  
