@@ -30,9 +30,10 @@ const Betting: React.FC<BettingProps> = ({
           setBetAmount(balance); // 👈 Automatically adjusts to balance
         }
       }, [betAmount, balance]);
-    const increaseBet = () => {
-        setBetAmount((prev) => Math.min(prev * 2, balance));
+      const increaseBet = () => {
+        setBetAmount((prev) => Math.min(prev === 0 ? 1 : prev * 2, balance));
       };
+      
       
       const decreaseBet = () => {
         setBetAmount((prev) => Math.max(1, Math.floor(prev / 2)));

@@ -21,6 +21,8 @@ export default function RouletteWheel() {
   const [history, setHistory] = useState<number[]>([]);
   const [showConfetti, setShowConfetti] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState<number>(0);
+  const [translateY, setTranslateY] = useState(220); // Default for large screens
+
   useEffect(() => {
     if (betType === "number") {
       setBetValue(0); // Default to first number on wheel
@@ -92,6 +94,25 @@ export default function RouletteWheel() {
       setBalance((prev) => prev + winnings - betAmount);
     };
     
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        setTranslateY(120); // Small screens
+      } else if (window.innerWidth < 1024) {
+        setTranslateY(170); // Medium screens
+      } else {
+        setTranslateY(220); // Large screens
+      }
+    };
+
+    // Set initial value
+    handleResize();
+
+    // Listen for window resize
+    window.addEventListener("resize", handleResize);
+    
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
     
 
   const getColor = (num: number | null, isHighlighted: boolean = false) => {
@@ -109,8 +130,8 @@ export default function RouletteWheel() {
   return (
     <div className="flex flex-col items-center justify-center  text-white ">
       {showConfetti && <Confetti numberOfPieces={600} recycle={false} />}
-      <h1 className="text-5xl font-extrabold mb-6 text-gold drop-shadow-md">Dejny&apos;s Roulette</h1>
-      <p className="absolute shadow-md hover:scale-110 transition-all duration-150 ease-in-out cursor-pointer top-4 left-4 px-4 py-2 bg-gradient-to-tr from-white/30  to-black rounded-xl font-bold">
+      <h1 className="text-5xl font-extrabold mb-6 text-gold drop-shadow-md text-center absolute top-32 md:static md:top-auto">Dejny&apos;s Roulette</h1>
+      <p className="absolute shadow-md hover:scale-110 transition-all duration-150 ease-in-out cursor-pointer top-4 left-4 px-4 py-2 bg-white text-black rounded-xl font-bold">
         Balance: <span className="font-mono">{balance}</span>
       </p>
       <button 
@@ -119,19 +140,19 @@ export default function RouletteWheel() {
         Top Up 
       </button>
       {/* ROULETTE WHEEL */}
-      <div className="relative w-[500px] h-[500px] flex items-center justify-center">
-        <div className="absolute w-full h-full border-8 border-dotted rounded-full flex items-center justify-center text-3xl font-bold">
-          {wheelNumbers.map((num, index) => (
-            <motion.div
-              key={num}
-              className={`absolute w-10 h-10 flex items-center justify-center text-sm font-bold rounded-full border-2 ${getColor(num, index === highlightIndex)} ${getBorderColor(num)}`}
-              style={{
-                transform: `rotate(${(index / wheelNumbers.length) * 360}deg) translateY(-220px) rotate(-${(index / wheelNumbers.length) * 360}deg)`,
-              }}
-            >
-              {num}
-            </motion.div>
-          ))}
+      <div className="relative sm:w-[300px] sm:h-[300px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px] flex items-center justify-center">
+  <div className="md:absolute mt-80 md:mt-0 w-full h-full border-8 border-dotted rounded-full flex items-center justify-center text-lg sm:text-sm md:text-base lg:text-lg font-bold">
+    {wheelNumbers.map((num, index) => (
+      <motion.div
+      key={num}
+      className={`absolute sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 flex items-center justify-center text-xs sm:text-[10px] md:text-sm lg:text-base font-bold rounded-full border-2 ${getColor(num, index === highlightIndex)} ${getBorderColor(num)}`}
+      style={{
+        transform: `rotate(${(index / wheelNumbers.length) * 360}deg) translateY(-${translateY}px) rotate(-${(index / wheelNumbers.length) * 360}deg)`,
+      }}
+    >
+      {num}
+    </motion.div>
+    ))}
          <div className="relative w-full h-full flex items-center justify-center">
   {/* CENTER RESULT NUMBER */}
   <div
@@ -146,7 +167,7 @@ export default function RouletteWheel() {
       </div>
 
         {/* Betting Component */}
-        <div className="absolute left-0 ml-4">
+        <div className="relative mt-40 md:absolute md:left-0 md:ml-4">
             
         <Betting 
                 balance={balance} 
@@ -164,7 +185,7 @@ export default function RouletteWheel() {
       <div className="relative flex flex-col items-center group">
   <Button
     onClick={spinWheel}
-    className="mt-8 px-6 py-3 bg-gold text-black font-semibold rounded-xl shadow-lg hover:shadow-2xl transition duration-300 ease-in-out disabled:opacity-50 relative"
+    className="mt-8 px-6 mb-8 py-3 bg-gold text-black font-semibold rounded-xl shadow-lg hover:shadow-2xl transition duration-300 ease-in-out disabled:opacity-50 relative"
     disabled={spinning || betAmount <= 0 || betValue === null || betAmount > balance}
   >
     {spinning ? "Spinning..." : "Spin the Wheel"}
@@ -185,15 +206,20 @@ export default function RouletteWheel() {
     </div>
   )}
 </div>
-      {/* HISTORY BAR */}
-      <div className="absolute bottom-4 right-4 flex gap-2">
-        {history.map((num, index) => (
-          <div key={index} className={`w-10 h-10 flex items-center justify-center text-lg font-bold rounded-full border-2 ${getColor(num)} ${getBorderColor(num)}`}>
-            {num}
-          </div>
-        ))}
-       
-      </div>
+{/* HISTORY BAR */}
+<div className="absolute top-4 right-4 flex gap-1 sm:gap-2 flex-wrap sm:flex-nowrap">
+  {history.map((num, index) => (
+    <div
+      key={index}
+      className={`flex items-center justify-center text-sm sm:text-lg font-bold rounded-full border-2 
+                  w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10
+                  ${getColor(num)} ${getBorderColor(num)}`}
+    >
+      {num}
+    </div>
+  ))}
+</div>
+
     </div>
   );
 }
