@@ -79,7 +79,7 @@ const Betting: React.FC<BettingProps> = ({
           appearance: none;
           width: 100%;
           height: 8px;
-          background: linear-gradient(to right, #facc15, #22c55e); /* Yellow to Green */
+          background: linear-gradient(to right, #222222, #22c55e); /* Yellow to Green */
           border-radius: 10px;
           outline: none;
           transition: opacity 0.2s;

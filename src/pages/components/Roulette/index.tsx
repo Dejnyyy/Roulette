@@ -12,7 +12,7 @@ const wheelNumbers = [
 ];
 
 export default function RouletteWheel() {
-    const [balance, setBalance] = useState(1000);
+    let [balance, setBalance] = useState(1000);
     const [betAmount, setBetAmount] = useState(0);
     const [betType, setBetType] = useState("number");
     const [betValue, setBetValue] = useState<number | "red" | "black" | "even" | "odd" | null>(null);  
@@ -110,9 +110,14 @@ export default function RouletteWheel() {
     <div className="flex flex-col items-center justify-center  text-white ">
       {showConfetti && <Confetti numberOfPieces={600} recycle={false} />}
       <h1 className="text-5xl font-extrabold mb-6 text-gold drop-shadow-md">Dejny&apos;s Roulette</h1>
-      <p className="absolute shadow-md hover:scale-110 transition-all duration-150 ease-in-out cursor-pointer   top-4 left-4 px-4 py-2 bg-gradient-to-tr from-white/30  to-black rounded-xl font-bold">
+      <p className="absolute shadow-md hover:scale-110 transition-all duration-150 ease-in-out cursor-pointer top-4 left-4 px-4 py-2 bg-gradient-to-tr from-white/30  to-black rounded-xl font-bold">
         Balance: <span className="font-mono">{balance}</span>
       </p>
+      <button 
+  onClick={() => setBalance((prev) => prev + 1000)} 
+  className="absolute shadow-md hover:scale-110 transition-all duration-150 ease-in-out cursor-pointer top-16 left-4 px-4 py-2 bg-green-500  rounded-xl font-bold">
+        Top Up 
+      </button>
       {/* ROULETTE WHEEL */}
       <div className="relative w-[500px] h-[500px] flex items-center justify-center">
         <div className="absolute w-full h-full border-8 border-dotted rounded-full flex items-center justify-center text-3xl font-bold">
