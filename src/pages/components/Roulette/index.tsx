@@ -97,7 +97,7 @@ export default function RouletteWheel() {
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 640) {
-        setTranslateY(120); // Small screens
+        setTranslateY(170); // Small screens
       } else if (window.innerWidth < 1024) {
         setTranslateY(170); // Medium screens
       } else {
@@ -140,12 +140,12 @@ export default function RouletteWheel() {
         Top Up 
       </button>
       {/* ROULETTE WHEEL */}
-      <div className="relative sm:w-[300px] sm:h-[300px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px] flex items-center justify-center">
+      <div className="relative mt-20 md:mt-0 sm:w-[300px] sm:h-[300px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px] flex items-center justify-center">
   <div className="md:absolute mt-80 md:mt-0 w-full h-full border-8 border-dotted rounded-full flex items-center justify-center text-lg sm:text-sm md:text-base lg:text-lg font-bold">
     {wheelNumbers.map((num, index) => (
       <motion.div
       key={num}
-      className={`absolute sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 flex items-center justify-center text-xs sm:text-[10px] md:text-sm lg:text-base font-bold rounded-full border-2 ${getColor(num, index === highlightIndex)} ${getBorderColor(num)}`}
+      className={`absolute p-2 sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 flex items-center justify-center text-sm sm:text-[12px] md:text-md lg:text-base font-bold rounded-full border-2 ${getColor(num, index === highlightIndex)} ${getBorderColor(num)}`}
       style={{
         transform: `rotate(${(index / wheelNumbers.length) * 360}deg) translateY(-${translateY}px) rotate(-${(index / wheelNumbers.length) * 360}deg)`,
       }}
@@ -167,7 +167,7 @@ export default function RouletteWheel() {
       </div>
 
         {/* Betting Component */}
-        <div className="relative mt-40 md:absolute md:left-0 md:ml-4">
+        <div className="relative mt-40 sm:mt-64 md:absolute md:left-0 md:ml-4">
             
         <Betting 
                 balance={balance} 
