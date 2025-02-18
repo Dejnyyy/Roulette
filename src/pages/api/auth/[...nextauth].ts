@@ -49,7 +49,7 @@ export const authOptions: NextAuthOptions = {
             image: true,
             balance: true,
           },
-        }) as { id: string; email: string; name?: string | null; image?: string | null; balance: number } | null;
+        }) as { id: string; email: string; name?: string | null; image?: string; balance: number };
         
         
         
