@@ -1,6 +1,7 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 const globalForPrisma = global as unknown as { prisma?: PrismaClient };
 export const prisma = globalForPrisma.prisma ?? new PrismaClient();
@@ -27,8 +28,9 @@ export const authOptions: NextAuthOptions = {
             data: {
               email: user.email,
               name: user.name ?? null,
-              image: user.image ?? null
-            },
+              image: user.image ?? null, 
+              balance: 1000, 
+            } as Prisma.UserCreateInput,  // Force TypeScript to use Prisma's correct type
           });
         console.log("✅ New user saved to database:", user.email);
       }

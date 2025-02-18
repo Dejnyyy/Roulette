@@ -12,3 +12,10 @@ declare module "next-auth" {
   }
 }
 
+export type UserCreateInput = {
+  id?: string;
+  email: string;
+  name?: string | null;
+  image?: string | null; // ✅ This must be present
+  balance?: number;
+};
