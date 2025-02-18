@@ -23,14 +23,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const bet = await prisma.bet.create({
-      data: {
-        userId: session.user.id,
-        amount,
-        choice,
-        createdAt: new Date(),
-      },
-    });
+    // Creating a bet without the result field
+    // /pages/api/bet.ts
+      const bet = await prisma.bet.create({
+        data: {
+          userId: session.user.id,
+          amount,
+          choice,
+          createdAt: new Date(),
+          result: "pending", // Default value while waiting for the result
+        },
+      });
+
 
     return res.status(200).json({ id: bet.id });
   } catch (error) {
