@@ -27,9 +27,10 @@ const Betting: React.FC<BettingProps> = ({
 }) => {
     useEffect(() => {
         if (betAmount > balance) {
-          setBetAmount(balance); // 👈 Automatically adjusts to balance
+          setBetAmount(balance);
         }
-      }, [betAmount, balance]);
+      }, [betAmount, balance, setBetAmount]);
+      
       const increaseBet = () => {
         setBetAmount((prev) => Math.min(prev === 0 ? 1 : prev * 2, balance));
       };
