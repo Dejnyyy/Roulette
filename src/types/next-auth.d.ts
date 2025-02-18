@@ -19,7 +19,7 @@ export type UserSelect = {
   id?: boolean;
   email?: boolean;
   name?: boolean;
-  image?: boolean;  // ✅ This must be here
+  image?: boolean;  
   balance?: boolean;
 };
 

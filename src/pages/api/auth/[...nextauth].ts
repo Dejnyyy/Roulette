@@ -49,14 +49,11 @@ export const authOptions: NextAuthOptions = {
             image: true,
             balance: true,
           },
-        }) as { id: string; email: string; name?: string | null; image?: string; balance: number };
-        
-        
-        
-        if (dbUser) {
-            session.user.id = dbUser.id;
-            session.user.image = dbUser.image ?? null; 
-          }
+        });
+      if (dbUser) {
+        session.user.id = dbUser.id;
+        session.user.image = dbUser.image ?? null;
+      }
           
       }
       return session;
