@@ -55,7 +55,7 @@ export default function RouletteWheel() {
         return;
     }
     if (betType === "number") {
-      setBetValue(0); // Default to first number on wheel
+      setBetValue(1); // Default to first number on wheel
     } else if (betType === "color") {
       setBetValue("red"); // Default to "red" for color bets
     } else if (betType === "parity") {
