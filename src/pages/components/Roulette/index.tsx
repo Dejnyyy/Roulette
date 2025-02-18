@@ -30,6 +30,10 @@ export default function RouletteWheel() {
   const [translateY, setTranslateY] = useState(220); // Default for large screens
 
   useEffect(() => {
+    if(!session){
+        setBetValue(null);
+        return;
+    }
     if (betType === "number") {
       setBetValue(0); // Default to first number on wheel
     } else if (betType === "color") {
@@ -37,7 +41,8 @@ export default function RouletteWheel() {
     } else if (betType === "parity") {
       setBetValue("even"); // Default to "even" for parity bets
     }
-  }, [betType]);
+  }, [betType,session]);
+
   const spinWheel = () => {
     if (spinning) return;
     
@@ -199,10 +204,10 @@ export default function RouletteWheel() {
   <Button
     onClick={spinWheel}
     className="mt-8 px-6 mb-8 py-3 bg-gold text-black font-semibold rounded-xl shadow-lg hover:shadow-2xl transition duration-300 ease-in-out disabled:opacity-50 relative"
-    disabled={spinning || betAmount <= 0 || betValue === null || betAmount > balance}
-  >
-    {spinning ? "Spinning..." : "Spin the Wheel"}
-  </Button>
+    disabled={!session || spinning || betAmount <= 0 || betValue === null || betAmount > balance}
+    >
+      {!session ? "Sign in to Play" : spinning ? "Spinning..." : "Spin the Wheel"}
+    </Button>
 
   {/* Render Tooltip ONLY if button is disabled */}
   {(spinning || betAmount <= 0 || betValue === null || betAmount > balance) && (
