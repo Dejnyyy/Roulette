@@ -18,13 +18,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const { betId, result, outcome, winnings, betAmount } = req.body;
 
-  if (!betId || result === undefined || !outcome || winnings === undefined) {
+  // Log to check if betAmount is received correctly
+  console.log("Received bet update request:", { betId, result, outcome, winnings, betAmount });
+
+  if (!betId || result === undefined || !outcome || winnings === undefined || betAmount === undefined) {
     return res.status(400).json({ message: "Missing bet details" });
   }
 
   try {
-    console.log("Received updateBet request:", { betId, result, outcome, winnings, betAmount });
-
     // Update the bet with the result and outcome (win/loss)
     const updatedBet = await prisma.bet.update({
       where: { id: betId },

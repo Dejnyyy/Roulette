@@ -93,7 +93,7 @@ export default function RouletteWheel() {
           const winnings = calculateWinnings(newResult);
   
           if (betId) {
-            await updateBetResult(betId, newResult, winnings);
+            await updateBetResult(betId, newResult, winnings,betAmount);
           }
   
           if (winnings > 0) {
@@ -114,8 +114,7 @@ export default function RouletteWheel() {
   
     spin();
   };
-  
-  const updateBetResult = async (betId: string | null, result: number, winnings: number) => {
+  const updateBetResult = async (betId: string | null, result: number, winnings: number, betAmount: number) => {
     if (!betId) {
       console.error("🚨 updateBetResult: betId is missing", betId);
       return;
@@ -127,16 +126,21 @@ export default function RouletteWheel() {
       const response = await fetch("/api/updateBet", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ betId, result, outcome, winnings }),
+        body: JSON.stringify({
+          betId,
+          result,
+          outcome,
+          winnings,
+          betAmount, // Make sure this is included
+        }),
       });
   
       const data = await response.json();
       if (response.ok) {
         console.log("✅ Bet updated:", data);
         if (outcome === "W") {
-          setBalance((prev) => prev + winnings); // Add winnings to the balance if the user won
+          setBalance((prev) => prev + winnings); // Add winnings if won
         }
-        // No need to subtract betAmount here, it has already been deducted earlier
       } else {
         console.error("🚨 Error updating bet:", data.message);
       }
@@ -144,6 +148,7 @@ export default function RouletteWheel() {
       console.error("🚨 Error updating bet result:", error);
     }
   };
+  
   
   
   
