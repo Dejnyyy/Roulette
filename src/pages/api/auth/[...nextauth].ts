@@ -1,5 +1,8 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -8,7 +11,43 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET, 
+  callbacks: {
+    async signIn({ user }) {
+      if (!user.email) return false; // Ensure the user has an email
+
+      // ✅ Check if the user exists in DB, if not, create it
+      const existingUser = await prisma.user.findUnique({
+        where: { email: user.email },
+      });
+
+      if (!existingUser) {
+        await prisma.user.create({
+          data: {
+            email: user.email,
+            name: user.name,
+            image: user.image,
+          },
+        });
+        console.log("✅ New user saved to database:", user.email);
+      }
+
+      return true; // Allow login
+    },
+
+    async session({ session }) {
+      if (session.user && session.user.email) {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: session.user.email },
+        });
+
+        if (dbUser) {
+          session.user.id = dbUser.id; // ✅ Assign the correct ID from the DB
+        }
+      }
+      return session;
+    },
+  },
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 export default NextAuth(authOptions);

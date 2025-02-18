@@ -42,9 +42,9 @@ export default function RouletteWheel() {
       setBetValue("even"); // Default to "even" for parity bets
     }
   }, [betType,session]);
-
   const spinWheel = (betId?: string) => {
     if (spinning) return;
+  
     setSpinning(true);
     setShowConfetti(false);
     setResult(null);
@@ -68,18 +68,18 @@ export default function RouletteWheel() {
   
           const winnings = calculateWinnings(newResult);
   
-          // If there's a bet ID, update the result in the database
           if (betId) {
-            await updateBetResult(betId, newResult, winnings);
+            await updateBetResult(betId, newResult, winnings); // ✅ Send the spun number
           }
+  
           if (winnings > 0) {
             setShowConfetti(true);
             setBalance((prev) => prev + winnings);
           }
   
+          setSpinning(false);
         }, 300);
-        setSpinning(false);
-        setTimeout(() => setShowConfetti(false), 3300);
+  
         return;
       }
   
@@ -90,6 +90,7 @@ export default function RouletteWheel() {
   
     spin();
   };
+  
   
   
   
@@ -110,23 +111,16 @@ export default function RouletteWheel() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ betId, result, outcome, winnings }),
+        body: JSON.stringify({ betId, result, outcome, winnings, tossedNumber: result }), // ✅ Send the spun number
       });
   
-      const text = await response.text(); // Read raw response
-      console.log("📌 Raw response from server:", text);
-  
-      try {
-        const data = JSON.parse(text);
-        console.log("✅ Parsed JSON response:", data);
-      } catch (jsonError) {
-        console.error("🚨 JSON Parsing Error. Response is not valid JSON:", text);
-      }
+      const data = await response.json();
+      console.log("✅ Bet updated with tossed number:", data);
     } catch (error) {
       console.error("🚨 Error updating bet result:", error);
     }
   };
-
+  
   
   const placeBet = async () => {
     if (!session) {

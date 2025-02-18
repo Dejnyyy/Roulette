@@ -50,5 +50,6 @@ model Bet {
   amount   Int
   choice   String
   result   String
+  tossedNumber  Int?
   createdAt DateTime @default(now())
 }
