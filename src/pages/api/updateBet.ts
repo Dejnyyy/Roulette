@@ -1,3 +1,4 @@
+// /pages/api/updateBet.ts
 import { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth/next";
@@ -17,14 +18,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const { betId, result, outcome, winnings } = req.body;
 
-  if (!betId || result === undefined || !outcome) {
+  if (!betId || result === undefined || !outcome || winnings === undefined) {
     return res.status(400).json({ message: "Missing bet details" });
   }
 
   try {
-    console.log("🔍 Received updateBet request:", { betId, result, outcome, winnings });
+    console.log("Received updateBet request:", { betId, result, outcome, winnings });
 
-    // ✅ Update bet result
+    // Update the bet with the result and outcome (win or lose)
     const updatedBet = await prisma.bet.update({
       where: { id: betId },
       data: {
@@ -33,24 +34,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
     });
 
-    console.log("✅ Updated bet with tossed number:", updatedBet);
+    console.log("Updated bet with tossed number:", updatedBet);
 
-    // ✅ If winnings > 0, update user balance
+    // If winnings > 0, update user balance
     if (winnings > 0) {
-      console.log(`💰 Updating balance for userId: ${session.user.email}`);
+      console.log(`Updating balance for user: ${session.user.email}`);
       await prisma.user.update({
         where: { email: session.user.email },
         data: {
-          balance: { increment: winnings }, // ✅ Add winnings to balance
+          balance: { increment: winnings }, // Add winnings to balance
         },
       });
-      
-      
     }
 
     return res.status(200).json(updatedBet);
   } catch (error) {
-    console.error("🚨 Error updating bet:", error);
-    return res.status(500).json({ message: "Server error", error: error instanceof Error ? error.message : "Unknown error" });
+    console.error("Error updating bet:", error);
+    return res.status(500).json({ message: "Server error" });
   }
 }

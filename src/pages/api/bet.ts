@@ -1,3 +1,4 @@
+// /pages/api/bet.ts
 import { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth/next";
@@ -18,29 +19,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { amount, choice } = req.body;
 
   if (!amount || !choice) {
-    return res.status(400).json({ message: "Missing bet details" });
+    return res.status(400).json({ message: "Invalid bet data." });
   }
 
   try {
-    // ✅ Deduct balance from user
-    const user = await prisma.user.update({
-      where: { email: session.user.email },
-      data: { balance: { decrement: amount } },
-    });
-
-    // ✅ Create bet
-    const newBet = await prisma.bet.create({
+    const bet = await prisma.bet.create({
       data: {
-        userId: session.user.email,
+        userId: session.user.id,
         amount,
         choice,
-        result: "pending",
+        createdAt: new Date(),
       },
     });
 
-    return res.status(201).json({ id: newBet.id, balance: user.balance });
+    return res.status(200).json({ id: bet.id });
   } catch (error) {
-    console.error("🚨 Error placing bet:", error);
+    console.error("Error placing bet:", error);
     return res.status(500).json({ message: "Server error" });
   }
 }
