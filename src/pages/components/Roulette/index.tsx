@@ -5,6 +5,10 @@ import { motion } from "framer-motion";
 import Confetti from "react-confetti";
 import Button from "../button";
 import Betting from "../Betting";
+import Sign from "@/pages/sign";
+import { useSession } from "next-auth/react";
+import Image from "next/image"
+
 
 const wheelNumbers = [
   0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 
@@ -12,6 +16,8 @@ const wheelNumbers = [
 ];
 
 export default function RouletteWheel() {
+    const { data: session } = useSession();
+    const imageUrl = session?.user.image ?? "/defaultpfp.png";
     const [balance, setBalance] = useState(1000);
     const [betAmount, setBetAmount] = useState(0);
     const [betType, setBetType] = useState("number");
@@ -130,15 +136,22 @@ export default function RouletteWheel() {
   return (
     <div className="flex flex-col items-center justify-center  text-white ">
       {showConfetti && <Confetti numberOfPieces={600} recycle={false} />}
+      <div className="absolute top-4 left-4 flex flex-row ">
+      <Sign />
+      {session && (
+          <Image
+            src={imageUrl}
+            alt="User's profile picture"
+            width={25}
+            height={25}
+            className="rounded-full border-2 w-10 ml-4 border-white shadow-lg"
+          />
+        )}      </div>
       <h1 className="text-5xl font-extrabold mb-6 text-gold drop-shadow-md text-center absolute top-32 md:static md:top-auto">Dejny&apos;s Roulette</h1>
-      <p className="absolute shadow-md hover:scale-110 transition-all duration-150 ease-in-out cursor-pointer top-4 left-4 px-4 py-2 bg-white text-black rounded-xl font-bold">
+      <p className="absolute shadow-md hover:scale-110 transition-all duration-150 ease-in-out cursor-pointer top-16 left-4 px-4 py-2 bg-white text-black rounded-xl font-bold">
         Balance: <span className="font-mono">{balance}</span>
       </p>
-      <button 
-  onClick={() => setBalance((prev) => prev + 1000)} 
-  className="absolute shadow-md hover:scale-110 transition-all duration-150 ease-in-out cursor-pointer top-16 left-4 px-4 py-2 bg-green-500  rounded-xl font-bold">
-        Top Up 
-      </button>
+      
       {/* ROULETTE WHEEL */}
       <div className="relative mt-20 md:mt-0 sm:w-[300px] sm:h-[300px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px] flex items-center justify-center">
   <div className="md:absolute mt-80 md:mt-0 w-full h-full border-8 border-dotted rounded-full flex items-center justify-center text-lg sm:text-sm md:text-base lg:text-lg font-bold">

@@ -13,18 +13,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 model User {
-  id       String  @id @default(uuid())
-  email    String  @unique
-  name     String?
-  password String?  // Only if not using OAuth
-  balance  Int      @default(1000)
-  bets     Bet[]
+  id      String  @id @default(uuid())
+  email   String  @unique
+  name    String?
+  image   String?
+  balance Int     @default(1000)
+
+  accounts  Account[]
+  sessions  Session[]
 }
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  provider          String
+  providerAccountId String
+  type              String
+  access_token      String?  // 🔹 Used for OAuth login
+  refresh_token     String?  // 🔹 Required for Google refresh token
+  expires_at        Int?     // 🔹 Expiration time for access_token
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+
+model Session {
+  id      String  @id @default(uuid())
+  userId  String
+  expires DateTime
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 
 model Bet {
   id       String  @id @default(uuid())
   userId   String
-  user     User    @relation(fields: [userId], references: [id])
   amount   Int
   choice   String
   result   String
