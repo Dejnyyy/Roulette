@@ -173,7 +173,7 @@ const Betting: React.FC<BettingProps> = ({
        placeholder="Choose Number"
        min="0"
        max={numberCount - 1}
-       value={betValue === null ? "" : betValue}
+       value={betValue === null ? 0 : betValue}
        onChange={(e) => {
          const val = Number(e.target.value);
          // Check if the entered value is within the valid range
