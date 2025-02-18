@@ -49,10 +49,12 @@ export default function RouletteWheel() {
   
     fetchBalance();
   }, [session]);
+  
+  
   useEffect(() => {
     if(!session){
-        setBetValue(null);
-        return;
+      setBetValue(null);
+      return;
     }
     if (betType === "number") {
       setBetValue(0); // Default to first number on wheel
@@ -61,7 +63,8 @@ export default function RouletteWheel() {
     } else if (betType === "parity") {
       setBetValue("even"); // Default to "even" for parity bets
     }
-  }, [betType,session]);
+  }, [betType, session]);
+  
 
   const isSpinningRef = useRef(false); // ✅ Track spinning instantly
 
@@ -151,7 +154,6 @@ export default function RouletteWheel() {
   
   
   
-  
   const placeBet = async () => {
     if (!session) {
       alert("You need to be logged in to place a bet!");
@@ -170,7 +172,7 @@ export default function RouletteWheel() {
   
     // Deduct the bet amount before sending the bet details
     setBalance((prev) => prev - betAmount); // ✅ Deduct here only ONCE when placing the bet
-  
+    
     try {
       const response = await fetch("/api/bet", {
         method: "POST",
@@ -190,6 +192,7 @@ export default function RouletteWheel() {
       console.error("🚨 Failed to place bet:", error);
     }
   };
+  
   
   
   
