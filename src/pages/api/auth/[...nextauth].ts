@@ -41,13 +41,16 @@ export const authOptions: NextAuthOptions = {
     async session({ session }) {
       if (session.user && session.user.email) {
         const dbUser = await prisma.user.findUnique({
-          where: { email: session.user.email },
-        });
+            where: { email: session.user.email },
+            select: { id: true, image: true },
+          });
+          
 
         if (dbUser) {
-          session.user.id = dbUser.id;
-          session.user.image = dbUser.image ?? null; // ✅ Ensure session includes image
-        }
+            session.user.id = dbUser.id;
+            session.user.image = dbUser.image ?? null; 
+          }
+          
       }
       return session;
     },
