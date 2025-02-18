@@ -93,7 +93,7 @@ export default function RouletteWheel() {
           const winnings = calculateWinnings(newResult);
   
           if (betId) {
-            await updateBetResult(betId, newResult, winnings,betAmount);
+            await updateBetResult(betId, newResult, winnings);
           }
   
           if (winnings > 0) {
@@ -115,8 +115,7 @@ export default function RouletteWheel() {
     spin();
   };
   
-  
-  const updateBetResult = async (betId: string | null, result: number, winnings: number, betAmount: number) => {
+  const updateBetResult = async (betId: string | null, result: number, winnings: number) => {
     if (!betId) {
       console.error("🚨 updateBetResult: betId is missing", betId);
       return;
@@ -128,16 +127,16 @@ export default function RouletteWheel() {
       const response = await fetch("/api/updateBet", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ betId, result, outcome, winnings, betAmount }), // Include betAmount here
+        body: JSON.stringify({ betId, result, outcome, winnings }),
       });
   
       const data = await response.json();
       if (response.ok) {
         console.log("✅ Bet updated:", data);
-        setBalance((prev) => prev + winnings); // Add winnings (or nothing if it's a loss)
-        if (outcome === "L") {
-          setBalance((prev) => prev - betAmount); // Subtract bet amount if lost
+        if (outcome === "W") {
+          setBalance((prev) => prev + winnings); // Add winnings to the balance if the user won
         }
+        // No need to subtract betAmount here, it has already been deducted earlier
       } else {
         console.error("🚨 Error updating bet:", data.message);
       }
@@ -147,7 +146,7 @@ export default function RouletteWheel() {
   };
   
   
-
+  
   const placeBet = async () => {
     if (!session) {
       alert("You need to be logged in to place a bet!");
@@ -164,6 +163,9 @@ export default function RouletteWheel() {
       return;
     }
   
+    // Deduct the bet amount before sending the bet details
+    setBalance((prev) => prev - betAmount); // ✅ Deduct here only ONCE when placing the bet
+  
     try {
       const response = await fetch("/api/bet", {
         method: "POST",
@@ -175,12 +177,10 @@ export default function RouletteWheel() {
   
       if (response.ok && data.id) {
         console.log("📌 Bet ID received:", data.id);
-        setBalance((prev) => prev - betAmount); // ✅ Deduct here only ONCE
         spinWheel(data.id);
-    } else {
+      } else {
         console.error("🚨 Error placing bet:", data.message);
-    }
-    
+      }
     } catch (error) {
       console.error("🚨 Failed to place bet:", error);
     }
