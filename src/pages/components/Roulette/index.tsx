@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Confetti from "react-confetti";
 import Button from "../button";
@@ -42,10 +42,14 @@ export default function RouletteWheel() {
       setBetValue("even"); // Default to "even" for parity bets
     }
   }, [betType,session]);
+
+  const isSpinningRef = useRef(false); // ✅ Track spinning instantly
+
   const spinWheel = (betId?: string) => {
-    if (spinning) return;
-  
+    if (isSpinningRef.current) return; // ✅ Block multiple clicks instantly
+    isSpinningRef.current = true; // ✅ Disable clicks immediately
     setSpinning(true);
+  
     setShowConfetti(false);
     setResult(null);
   
@@ -69,7 +73,7 @@ export default function RouletteWheel() {
           const winnings = calculateWinnings(newResult);
   
           if (betId) {
-            await updateBetResult(betId, newResult, winnings); // ✅ Send the spun number
+            await updateBetResult(betId, newResult, winnings);
           }
   
           if (winnings > 0) {
@@ -78,8 +82,8 @@ export default function RouletteWheel() {
           }
   
           setSpinning(false);
+          isSpinningRef.current = false; // ✅ Re-enable clicks after spin completes
         }, 300);
-  
         return;
       }
   
@@ -90,7 +94,6 @@ export default function RouletteWheel() {
   
     spin();
   };
-  
   
   
   
@@ -121,10 +124,14 @@ export default function RouletteWheel() {
     }
   };
   
-  
   const placeBet = async () => {
     if (!session) {
       alert("You need to be logged in to place a bet!");
+      return;
+    }
+  
+    if (spinning || isSpinningRef.current) {
+      console.log("🚨 Already spinning, bet not placed!");
       return;
     }
   
@@ -160,6 +167,7 @@ export default function RouletteWheel() {
       console.error("🚨 Failed to place bet:", error);
     }
   };
+  
   
   
   
@@ -281,13 +289,18 @@ export default function RouletteWheel() {
         </div>
       {/* SPIN BUTTON */}
       <div className="relative flex flex-col items-center group">
-  <Button
-    onClick={placeBet}
-    className="mt-8 px-6 mb-8 py-3 bg-gold text-black font-semibold rounded-xl shadow-lg hover:shadow-2xl transition duration-300 ease-in-out disabled:opacity-50 relative"
-    disabled={!session || spinning || betAmount <= 0 || betValue === null || betAmount > balance}
-    >
-      {!session ? "Sign in to Play" : spinning ? "Spinning..." : "Spin the Wheel"}
-    </Button>
+      <Button
+        onClick={() => {
+            const button = document.activeElement as HTMLButtonElement; // ✅ Get the currently clicked button
+            if (button) button.disabled = true; // ✅ Disable it instantly
+            placeBet();
+        }}
+        className="mt-8 px-6 mb-8 py-3 bg-gold text-black font-semibold rounded-xl shadow-lg hover:shadow-2xl transition duration-300 ease-in-out disabled:opacity-50 relative"
+        disabled={spinning || betAmount <= 0 || betValue === null || betAmount > balance}
+        >
+        {spinning ? "Spinning..." : "Spin the Wheel"}
+        </Button>
+
 
   {/* Render Tooltip ONLY if button is disabled */}
   {(spinning || betAmount <= 0 || betValue === null || betAmount > balance) && (
