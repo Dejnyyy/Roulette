@@ -6,7 +6,7 @@ import { authOptions } from "./auth/[...nextauth]";
 const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "POST") {
+  if (req.method !== "GET") {
     return res.status(405).json({ message: "Method Not Allowed" });
   }
 
@@ -15,32 +15,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(401).json({ message: "Unauthorized. Please log in." });
   }
 
-  const { amount, choice } = req.body;
-
-  if (!amount || !choice) {
-    return res.status(400).json({ message: "Missing bet details" });
-  }
-
   try {
-    // ✅ Deduct balance from user
-    const user = await prisma.user.update({
+    let user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      data: { balance: { decrement: amount } },
     });
 
-    // ✅ Create bet
-    const newBet = await prisma.bet.create({
-      data: {
-        userId: session.user.email,
-        amount,
-        choice,
-        result: "pending",
-      },
-    });
+    if (!user) {
+      // ✅ Create user if not exists
+      user = await prisma.user.create({
+        data: {
+          email: session.user.email,
+          balance: 1000, // ✅ Default balance for new users
+        },
+      });
+    }
 
-    return res.status(201).json({ id: newBet.id, balance: user.balance });
+    return res.status(200).json({ balance: user.balance });
   } catch (error) {
-    console.error("🚨 Error placing bet:", error);
+    console.error("🚨 Error fetching balance:", error);
     return res.status(500).json({ message: "Server error" });
   }
 }

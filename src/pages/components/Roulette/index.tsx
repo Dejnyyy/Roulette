@@ -18,7 +18,7 @@ const wheelNumbers = [
 export default function RouletteWheel() {
     const { data: session } = useSession();
     const imageUrl = session?.user.image ?? "/defaultpfp.png";
-    const [balance, setBalance] = useState(1000);
+    const [balance, setBalance] = useState<number>(0); 
     const [betAmount, setBetAmount] = useState(0);
     const [betType, setBetType] = useState("number");
     const [betValue, setBetValue] = useState<number | "red" | "black" | "even" | "odd" | null>(null);  
@@ -29,6 +29,26 @@ export default function RouletteWheel() {
   const [highlightIndex, setHighlightIndex] = useState<number>(0);
   const [translateY, setTranslateY] = useState(220); // Default for large screens
 
+  useEffect(() => {
+    if (!session) return;
+  
+    const fetchBalance = async () => {
+      try {
+        const response = await fetch("/api/balance");
+        const data = await response.json();
+  
+        if (response.ok) {
+          setBalance(data.balance);
+        } else {
+          console.error("🚨 Failed to fetch balance:", data.message);
+        }
+      } catch (error) {
+        console.error("🚨 Error fetching balance:", error);
+      }
+    };
+  
+    fetchBalance();
+  }, [session]);
   useEffect(() => {
     if(!session){
         setBetValue(null);
@@ -97,7 +117,6 @@ export default function RouletteWheel() {
   
   
   
-  
   const updateBetResult = async (betId: string | null, result: number, winnings: number) => {
     if (!betId) {
       console.error("🚨 updateBetResult: betId is missing", betId);
@@ -106,24 +125,26 @@ export default function RouletteWheel() {
   
     const outcome = winnings > 0 ? "W" : "L";
   
-    console.log("📌 Updating bet result with:", { betId, result, outcome, winnings });
-  
     try {
       const response = await fetch("/api/updateBet", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ betId, result, outcome, winnings, tossedNumber: result }), // ✅ Send the spun number
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ betId, result, outcome, winnings }),
       });
   
       const data = await response.json();
-      console.log("✅ Bet updated with tossed number:", data);
+      if (response.ok) {
+        console.log("✅ Bet updated:", data);
+        setBalance((prev) => prev + winnings); // ✅ Update local state
+      } else {
+        console.error("🚨 Error updating bet:", data.message);
+      }
     } catch (error) {
       console.error("🚨 Error updating bet result:", error);
     }
   };
   
+
   const placeBet = async () => {
     if (!session) {
       alert("You need to be logged in to place a bet!");
@@ -143,26 +164,20 @@ export default function RouletteWheel() {
     try {
       const response = await fetch("/api/bet", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          amount: betAmount,
-          choice: betValue,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: betAmount, choice: betValue }),
       });
   
       const data = await response.json();
   
-      console.log("✅ Bet placed successfully:", data);
-  
       if (response.ok && data.id) {
         console.log("📌 Bet ID received:", data.id);
-        setBalance((prev) => prev - betAmount);
-        spinWheel(data.id); // ✅ Ensure a valid bet ID is passed
-      } else {
-        console.error("🚨 Error: No valid bet ID received", data);
-      }
+        setBalance((prev) => prev - betAmount); // ✅ Deduct here only ONCE
+        spinWheel(data.id);
+    } else {
+        console.error("🚨 Error placing bet:", data.message);
+    }
+    
     } catch (error) {
       console.error("🚨 Failed to place bet:", error);
     }
@@ -171,27 +186,26 @@ export default function RouletteWheel() {
   
   
   
-    const calculateWinnings = (number: number): number => {
-        let winnings = 0;
-        const redNumbers = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
-      
-        if (betType === "number" && betValue === number) {
-          winnings = betAmount * 15;
-        } else if (betType === "color") {
-          const isRed = redNumbers.has(number);
-          if ((betValue === "red" && isRed) || (betValue === "black" && !isRed && number !== 0)) {
-            winnings = betAmount * 2;
-          }
-        } else if (betType === "parity" && number !== 0) {
-          if ((betValue === "even" && number % 2 === 0) || (betValue === "odd" && number % 2 !== 0)) {
-            winnings = betAmount * 2;
-          }
-        }
-      
-        setBalance((prev) => prev + winnings - betAmount); // ✅ Updates balance
-        return winnings; // ✅ Now it returns winnings as a number
-      };
-      
+  const calculateWinnings = (number: number): number => {
+    let winnings = 0;
+    const redNumbers = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+
+    if (betType === "number" && betValue === number) {
+      winnings = betAmount * 15;
+    } else if (betType === "color") {
+      const isRed = redNumbers.has(number);
+      if ((betValue === "red" && isRed) || (betValue === "black" && !isRed && number !== 0)) {
+        winnings = betAmount * 2;
+      }
+    } else if (betType === "parity" && number !== 0) {
+      if ((betValue === "even" && number % 2 === 0) || (betValue === "odd" && number % 2 !== 0)) {
+        winnings = betAmount * 2;
+      }
+    }
+
+    return winnings; 
+};
+
     
   useEffect(() => {
     const handleResize = () => {

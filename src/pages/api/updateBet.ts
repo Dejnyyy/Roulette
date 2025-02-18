@@ -1,5 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "./auth/[...nextauth]";
 
 const prisma = new PrismaClient();
 
@@ -8,50 +10,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ message: "Method Not Allowed" });
   }
 
+  const session = await getServerSession(req, res, authOptions);
+  if (!session || !session.user?.email) {
+    return res.status(401).json({ message: "Unauthorized. Please log in." });
+  }
+
   const { betId, result, outcome, winnings } = req.body;
 
-  console.log("🔍 Received updateBet request:", { betId, result, outcome, winnings });
-
-  if (!betId || typeof betId !== "string" || result === undefined) {
-    console.error("🚨 Error: Invalid or missing data", { betId, result, outcome, winnings });
-    return res.status(400).json({ message: "Invalid data received" });
+  if (!betId || result === undefined || !outcome) {
+    return res.status(400).json({ message: "Missing bet details" });
   }
 
   try {
-    const existingBet = await prisma.bet.findUnique({
-      where: { id: betId },
-    });
+    console.log("🔍 Received updateBet request:", { betId, result, outcome, winnings });
 
-    if (!existingBet) {
-      console.error("🚨 Error: Bet not found for ID", betId);
-      return res.status(404).json({ message: "Bet not found" });
-    }
-
-    if (!existingBet.userId) {
-      console.error("🚨 Error: No userId found for this bet", existingBet);
-      return res.status(500).json({ message: "User ID is missing from bet" });
-    }
+    // ✅ Update bet result
     const updatedBet = await prisma.bet.update({
-        where: { id: betId },
-        data: { 
-          result: outcome, // "W" or "L"
-          tossedNumber: result, // ✅ Store the actual number that was spun
-        },
-      });
-      
+      where: { id: betId },
+      data: {
+        result: outcome,
+        tossedNumber: result, // Store the actual tossed number
+      },
+    });
 
     console.log("✅ Updated bet with tossed number:", updatedBet);
 
-    // ✅ If user won, update their balance
-    if (outcome === "W") {
-      console.log(`💰 Updating balance for userId: ${existingBet.userId}`);
-
-      const updatedUser = await prisma.user.update({
-        where: { id: existingBet.userId },
-        data: { balance: { increment: winnings } },
+    // ✅ If winnings > 0, update user balance
+    if (winnings > 0) {
+      console.log(`💰 Updating balance for userId: ${session.user.email}`);
+      await prisma.user.update({
+        where: { email: session.user.email },
+        data: {
+          balance: { increment: winnings }, // ✅ Add winnings to balance
+        },
       });
-
-      console.log("✅ Updated user balance:", updatedUser);
     }
 
     return res.status(200).json(updatedBet);
