@@ -10,7 +10,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ message: "Method Not Allowed" });
   }
 
-  // ✅ Correct way to get session in an API route
   const session = await getServerSession(req, res, authOptions);
 
   if (!session || !session.user?.email) {
@@ -25,15 +24,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const newBet = await prisma.bet.create({
-      data: {
-        userId: session.user.email, // ✅ Guaranteed to be a string
-        amount,
-        choice,
-        result: "pending",
-      },
-    });
-
-    return res.status(201).json(newBet);
+        data: {
+          userId: session.user.email, // ✅ Guaranteed to be a string
+          amount,
+          choice,
+          result: "pending",
+        },
+      });
+      
+      if (!newBet.id) {
+        console.error("Error: Bet creation failed", newBet);
+        return res.status(500).json({ message: "Failed to create bet" });
+      }
+      
+      return res.status(201).json({ id: newBet.id, message: "Bet placed successfully" });
+      
   } catch (error) {
     console.error("Error placing bet:", error);
     return res.status(500).json({ message: "Server error" });

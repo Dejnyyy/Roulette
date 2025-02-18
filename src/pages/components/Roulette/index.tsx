@@ -42,7 +42,7 @@ export default function RouletteWheel() {
       setBetValue("even"); // Default to "even" for parity bets
     }
   }, [betType,session]);
-  
+
   const spinWheel = (betId?: string) => {
     if (spinning) return;
     setSpinning(true);
@@ -72,15 +72,12 @@ export default function RouletteWheel() {
           if (betId) {
             await updateBetResult(betId, newResult, winnings);
           }
-  
-          // Update balance with winnings
           if (winnings > 0) {
             setShowConfetti(true);
             setBalance((prev) => prev + winnings);
           }
   
         }, 300);
-  
         setSpinning(false);
         setTimeout(() => setShowConfetti(false), 3300);
         return;
@@ -93,24 +90,43 @@ export default function RouletteWheel() {
   
     spin();
   };
-  const updateBetResult = async (betId: string, result: number, winnings: number) => {
+  
+  
+  
+  
+  const updateBetResult = async (betId: string | null, result: number, winnings: number) => {
+    if (!betId) {
+      console.error("🚨 updateBetResult: betId is missing", betId);
+      return;
+    }
+  
+    const outcome = winnings > 0 ? "W" : "L";
+  
+    console.log("📌 Updating bet result with:", { betId, result, outcome, winnings });
+  
     try {
-      await fetch("/api/updateBet", {
+      const response = await fetch("/api/updateBet", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          betId,
-          result,
-          winnings,
-        }),
+        body: JSON.stringify({ betId, result, outcome, winnings }),
       });
+  
+      const text = await response.text(); // Read raw response
+      console.log("📌 Raw response from server:", text);
+  
+      try {
+        const data = JSON.parse(text);
+        console.log("✅ Parsed JSON response:", data);
+      } catch (jsonError) {
+        console.error("🚨 JSON Parsing Error. Response is not valid JSON:", text);
+      }
     } catch (error) {
-      console.error("Error updating bet result:", error);
+      console.error("🚨 Error updating bet result:", error);
     }
   };
-  
+
   
   const placeBet = async () => {
     if (!session) {
@@ -137,17 +153,21 @@ export default function RouletteWheel() {
   
       const data = await response.json();
   
-      if (response.ok) {
-        console.log("Bet placed:", data);
-        setBalance((prev) => prev - betAmount); // Deduct balance locally
-        spinWheel(data.id); 
+      console.log("✅ Bet placed successfully:", data);
+  
+      if (response.ok && data.id) {
+        console.log("📌 Bet ID received:", data.id);
+        setBalance((prev) => prev - betAmount);
+        spinWheel(data.id); // ✅ Ensure a valid bet ID is passed
       } else {
-        console.error("Error placing bet:", data.message);
+        console.error("🚨 Error: No valid bet ID received", data);
       }
     } catch (error) {
-      console.error("Failed to place bet:", error);
+      console.error("🚨 Failed to place bet:", error);
     }
   };
+  
+  
   
     const calculateWinnings = (number: number): number => {
         let winnings = 0;
