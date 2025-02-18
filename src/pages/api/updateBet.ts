@@ -16,16 +16,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(401).json({ message: "Unauthorized. Please log in." });
   }
 
-  const { betId, result, outcome, winnings } = req.body;
+  const { betId, result, outcome, winnings, betAmount } = req.body;
 
   if (!betId || result === undefined || !outcome || winnings === undefined) {
     return res.status(400).json({ message: "Missing bet details" });
   }
 
   try {
-    console.log("Received updateBet request:", { betId, result, outcome, winnings });
+    console.log("Received updateBet request:", { betId, result, outcome, winnings, betAmount });
 
-    // Update the bet with the result and outcome (win or lose)
+    // Update the bet with the result and outcome (win/loss)
     const updatedBet = await prisma.bet.update({
       where: { id: betId },
       data: {
@@ -36,13 +36,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log("Updated bet with tossed number:", updatedBet);
 
-    // If winnings > 0, update user balance
+    // If winnings > 0 (win), update user balance by incrementing
     if (winnings > 0) {
-      console.log(`Updating balance for user: ${session.user.email}`);
+      console.log(`User won! Updating balance for user: ${session.user.email}`);
       await prisma.user.update({
         where: { email: session.user.email },
         data: {
           balance: { increment: winnings }, // Add winnings to balance
+        },
+      });
+    } else {
+      // If outcome is a loss (outcome == "L"), subtract the bet amount
+      console.log(`User lost! Deducting bet amount from balance for user: ${session.user.email}`);
+      await prisma.user.update({
+        where: { email: session.user.email },
+        data: {
+          balance: { decrement: betAmount }, // Subtract betAmount from balance
         },
       });
     }
@@ -50,6 +59,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json(updatedBet);
   } catch (error) {
     console.error("Error updating bet:", error);
-    return res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error", error: error instanceof Error ? error.message : "Unknown error" });
   }
 }
