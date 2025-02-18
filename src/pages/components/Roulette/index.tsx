@@ -42,13 +42,11 @@ export default function RouletteWheel() {
       setBetValue("even"); // Default to "even" for parity bets
     }
   }, [betType,session]);
-
-  const spinWheel = () => {
+  
+  const spinWheel = (betId?: string) => {
     if (spinning) return;
-    
     setSpinning(true);
     setShowConfetti(false);
-    
     setResult(null);
   
     const finalIndex = Math.floor(Math.random() * wheelNumbers.length);
@@ -64,46 +62,114 @@ export default function RouletteWheel() {
       spinsCompleted++;
   
       if (spinsCompleted >= totalSpins && currentIndex % wheelNumbers.length === finalIndex) {
-        setTimeout(() => {
-          setResult(newResult); 
+        setTimeout(async () => {
+          setResult(newResult);
           setHistory((prev) => [newResult, ...prev.slice(0, 4)]);
-          calculateWinnings(newResult);
+  
+          const winnings = calculateWinnings(newResult);
+  
+          // If there's a bet ID, update the result in the database
+          if (betId) {
+            await updateBetResult(betId, newResult, winnings);
+          }
+  
+          // Update balance with winnings
+          if (winnings > 0) {
+            setShowConfetti(true);
+            setBalance((prev) => prev + winnings);
+          }
+  
         }, 300);
+  
         setSpinning(false);
-        setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 3300);
         return;
       }
+  
       intervalTime = Math.min(25, intervalTime * 10);
       setTimeout(spin, intervalTime);
       currentIndex++;
     };
+  
     spin();
   };
+  const updateBetResult = async (betId: string, result: number, winnings: number) => {
+    try {
+      await fetch("/api/updateBet", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          betId,
+          result,
+          winnings,
+        }),
+      });
+    } catch (error) {
+      console.error("Error updating bet result:", error);
+    }
+  };
   
-
-    const redNumbers = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
-
-    const calculateWinnings = (number: number) => {
-      let winnings = 0;
-    
-      if (betType === "number" && betValue === number) {
-        winnings = betAmount * 15;
-      } else if (betType === "color") {
-        const isRed = redNumbers.has(number);
-        if ((betValue === "red" && isRed) || (betValue === "black" && !isRed && number !== 0)) {
-          winnings = betAmount * 2;
-        }
-      }  else if (betType === "parity") {
-        if (number !== 0) { // Ensures 0 does not count as even or odd
+  
+  const placeBet = async () => {
+    if (!session) {
+      alert("You need to be logged in to place a bet!");
+      return;
+    }
+  
+    if (betAmount > balance || betAmount <= 0 || betValue === null) {
+      alert("Invalid bet amount or selection.");
+      return;
+    }
+  
+    try {
+      const response = await fetch("/api/bet", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: betAmount,
+          choice: betValue,
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        console.log("Bet placed:", data);
+        setBalance((prev) => prev - betAmount); // Deduct balance locally
+        spinWheel(data.id); 
+      } else {
+        console.error("Error placing bet:", data.message);
+      }
+    } catch (error) {
+      console.error("Failed to place bet:", error);
+    }
+  };
+  
+    const calculateWinnings = (number: number): number => {
+        let winnings = 0;
+        const redNumbers = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+      
+        if (betType === "number" && betValue === number) {
+          winnings = betAmount * 15;
+        } else if (betType === "color") {
+          const isRed = redNumbers.has(number);
+          if ((betValue === "red" && isRed) || (betValue === "black" && !isRed && number !== 0)) {
+            winnings = betAmount * 2;
+          }
+        } else if (betType === "parity" && number !== 0) {
           if ((betValue === "even" && number % 2 === 0) || (betValue === "odd" && number % 2 !== 0)) {
             winnings = betAmount * 2;
           }
         }
-      }
-    
-      setBalance((prev) => prev + winnings - betAmount);
-    };
+      
+        setBalance((prev) => prev + winnings - betAmount); // ✅ Updates balance
+        return winnings; // ✅ Now it returns winnings as a number
+      };
+      
     
   useEffect(() => {
     const handleResize = () => {
@@ -202,7 +268,7 @@ export default function RouletteWheel() {
       {/* SPIN BUTTON */}
       <div className="relative flex flex-col items-center group">
   <Button
-    onClick={spinWheel}
+    onClick={placeBet}
     className="mt-8 px-6 mb-8 py-3 bg-gold text-black font-semibold rounded-xl shadow-lg hover:shadow-2xl transition duration-300 ease-in-out disabled:opacity-50 relative"
     disabled={!session || spinning || betAmount <= 0 || betValue === null || betAmount > balance}
     >
