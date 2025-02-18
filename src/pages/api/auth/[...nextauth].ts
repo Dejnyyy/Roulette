@@ -28,7 +28,7 @@ export const authOptions: NextAuthOptions = {
             data: {
               email: user.email,
               name: user.name ?? null,
-              image: user.image ?? null, 
+              image: user.image, 
               balance: 1000, 
             } as Prisma.UserCreateInput,  // Force TypeScript to use Prisma's correct type
           });
