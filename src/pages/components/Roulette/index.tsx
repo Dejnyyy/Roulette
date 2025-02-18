@@ -195,14 +195,13 @@ export default function RouletteWheel() {
     } else if (betType === "color") {
       const isRed = redNumbers.has(number);
       if ((betValue === "red" && isRed) || (betValue === "black" && !isRed && number !== 0)) {
-        winnings = betAmount * 2;
+        winnings = betAmount;
       }
     } else if (betType === "parity" && number !== 0) {
       if ((betValue === "even" && number % 2 === 0) || (betValue === "odd" && number % 2 !== 0)) {
-        winnings = betAmount * 2;
+        winnings = betAmount;
       }
     }
-
     return winnings; 
 };
 

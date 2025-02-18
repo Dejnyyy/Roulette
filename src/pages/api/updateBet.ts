@@ -44,6 +44,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           balance: { increment: winnings }, // ✅ Add winnings to balance
         },
       });
+      
+      
     }
 
     return res.status(200).json(updatedBet);
