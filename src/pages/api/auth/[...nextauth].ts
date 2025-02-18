@@ -24,12 +24,12 @@ export const authOptions: NextAuthOptions = {
 
       if (!existingUser) {
         await prisma.user.create({
-          data: {
-            email: user.email,
-            name: user.name ?? null,
-            image: user.image ?? null, // ✅ Ensure this is handled properly
-          },
-        });
+            data: {
+              email: user.email,
+              name: user.name ?? null,
+              image: user.image ?? null
+            },
+          });
         console.log("✅ New user saved to database:", user.email);
       }
 
