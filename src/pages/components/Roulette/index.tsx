@@ -50,18 +50,27 @@ export default function RouletteWheel() {
     fetchBalance();
   }, [session]);
   useEffect(() => {
-    if(!session){
-        setBetValue(null);
-        return;
+    if (!session) {
+      setBetValue(null);  // Reset bet value when the user is not logged in
+      return;
     }
-    if (betType === "number") {
-      setBetValue(1); // Default to first number on wheel
-    } else if (betType === "color") {
-      setBetValue("red"); // Default to "red" for color bets
-    } else if (betType === "parity") {
-      setBetValue("even"); // Default to "even" for parity bets
+  
+    if (!betType) {
+      setBetType("number"); // Default bet type to "number" if not set
     }
-  }, [betType,session]);
+  
+    if (betType === "number" && betValue === null) {
+      setBetValue(1);  // Default bet value to 1 for "number"
+    } else if (betType === "color" && betValue === null) {
+      setBetValue("red");  // Default bet value to "red" for "color"
+    } else if (betType === "parity" && betValue === null) {
+      setBetValue("even");  // Default bet value to "even" for "parity"
+    }
+  
+    console.log("Updated betType:", betType);
+    console.log("Updated betValue:", betValue);
+  }, [betType, session, betValue]); // Depend on betValue to catch any changes in it
+  
 
   const isSpinningRef = useRef(false); // ✅ Track spinning instantly
 
