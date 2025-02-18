@@ -16,9 +16,8 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ user }) {
-      if (!user.email) return false; // Ensure the user has an email
+      if (!user.email) return false;
 
-      // ✅ Check if the user exists in DB, if not, create it
       const existingUser = await prisma.user.findUnique({
         where: { email: user.email },
       });
@@ -27,14 +26,14 @@ export const authOptions: NextAuthOptions = {
         await prisma.user.create({
           data: {
             email: user.email,
-            name: user.name,
-            image: user.image,
+            name: user.name ?? null,
+            image: user.image ?? null, // ✅ Ensure this is handled properly
           },
         });
         console.log("✅ New user saved to database:", user.email);
       }
 
-      return true; // Allow login
+      return true;
     },
 
     async session({ session }) {
@@ -44,7 +43,8 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (dbUser) {
-          session.user.id = dbUser.id; // ✅ Assign the correct ID from the DB
+          session.user.id = dbUser.id;
+          session.user.image = dbUser.image ?? null; // ✅ Ensure session includes image
         }
       }
       return session;
