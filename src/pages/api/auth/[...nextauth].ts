@@ -45,11 +45,13 @@ export const authOptions: NextAuthOptions = {
           select: {
             id: true,
             email: true,
-            name: true,  // Ensure name is included
-            image: true, // ✅ Explicitly tell Prisma to select `image`
-            balance: true, 
+            name: true,
+            image: true,
+            balance: true,
           },
-        } as any);
+        }) as { id: string; email: string; name?: string | null; image?: string | null; balance: number } | null;
+        
+        
         
         if (dbUser) {
             session.user.id = dbUser.id;
