@@ -49,66 +49,19 @@ export default function RouletteWheel() {
   
     fetchBalance();
   }, [session]);
-  
-  
   useEffect(() => {
-    if (!session) {
-      setBetValue(null);  // Reset bet value when the user is not logged in
-      return;
+    if(!session){
+        setBetValue(null);
+        return;
     }
-  
-    // Set the default bet value based on the bet type
-    if (betType === "number" && betValue === null) {
-      setBetValue(1); // Set default bet value to 1 for "number"
-    } else if (betType === "color" && betValue === null) {
+    if (betType === "number") {
+      setBetValue(0); // Default to first number on wheel
+    } else if (betType === "color") {
       setBetValue("red"); // Default to "red" for color bets
-    } else if (betType === "parity" && betValue === null) {
+    } else if (betType === "parity") {
       setBetValue("even"); // Default to "even" for parity bets
     }
-  
-    console.log("Updated betType:", betType);  // Debugging betType
-    console.log("Updated betValue:", betValue);  // Debugging betValue
-  }, [betType, session, betValue]); // Depend on betValue to catch any changes in it
-  
-  const placeBet = async () => {
-    if (!session) {
-      alert("You need to be logged in to place a bet!");
-      return;
-    }
-  
-    if (spinning || isSpinningRef.current) {
-      console.log("🚨 Already spinning, bet not placed!");
-      return;
-    }
-  
-    if (betAmount <= 0 || betValue === null || betValue === undefined) {
-      alert("Invalid bet amount or selection.");
-      return;
-    }
-  
-    // Deduct the bet amount before sending the bet details
-    setBalance((prev) => prev - betAmount); // ✅ Deduct here only ONCE when placing the bet
-  
-    try {
-      const response = await fetch("/api/bet", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: betAmount, choice: betValue }),
-      });
-  
-      const data = await response.json();
-  
-      if (response.ok && data.id) {
-        console.log("📌 Bet ID received:", data.id);
-        spinWheel(data.id); // Proceed to spin after placing the bet
-      } else {
-        console.error("🚨 Error placing bet:", data.message);
-      }
-    } catch (error) {
-      console.error("🚨 Failed to place bet:", error);
-    }
-  };
-  
+  }, [betType,session]);
 
   const isSpinningRef = useRef(false); // ✅ Track spinning instantly
 
@@ -196,6 +149,47 @@ export default function RouletteWheel() {
     }
   };
   
+  
+  
+  
+  const placeBet = async () => {
+    if (!session) {
+      alert("You need to be logged in to place a bet!");
+      return;
+    }
+  
+    if (spinning || isSpinningRef.current) {
+      console.log("🚨 Already spinning, bet not placed!");
+      return;
+    }
+  
+    if (betAmount > balance || betAmount <= 0 || betValue === null) {
+      alert("Invalid bet amount or selection.");
+      return;
+    }
+  
+    // Deduct the bet amount before sending the bet details
+    setBalance((prev) => prev - betAmount); // ✅ Deduct here only ONCE when placing the bet
+  
+    try {
+      const response = await fetch("/api/bet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: betAmount, choice: betValue }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok && data.id) {
+        console.log("📌 Bet ID received:", data.id);
+        spinWheel(data.id);
+      } else {
+        console.error("🚨 Error placing bet:", data.message);
+      }
+    } catch (error) {
+      console.error("🚨 Failed to place bet:", error);
+    }
+  };
   
   
   

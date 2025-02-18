@@ -174,6 +174,7 @@ const Betting: React.FC<BettingProps> = ({
           type="number"
           className="w-40 bg-gray-800 text-white p-2 my-2 rounded-lg border border-gray-600 shadow-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
           placeholder="Choose Number"
+          defaultValue={0}
           min="0"
           max={numberCount - 1}
           value={betValue as number}
