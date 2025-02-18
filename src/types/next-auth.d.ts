@@ -15,6 +15,13 @@ declare module "next-auth" {
   }
 }
 
+export type UserSelect = {
+  id?: boolean;
+  email?: boolean;
+  name?: boolean;
+  image?: boolean;  // ✅ This must be here
+  balance?: boolean;
+};
 
 export type UserCreateInput = {
   id?: string;

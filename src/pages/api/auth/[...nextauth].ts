@@ -45,9 +45,11 @@ export const authOptions: NextAuthOptions = {
           select: {
             id: true,
             email: true,
-            image: true as boolean, // 🔹 Explicitly force TypeScript to accept `image`
+            name: true,  // Ensure name is included
+            image: true, // ✅ Explicitly tell Prisma to select `image`
+            balance: true, 
           },
-        });
+        } as any);
         
         if (dbUser) {
             session.user.id = dbUser.id;
