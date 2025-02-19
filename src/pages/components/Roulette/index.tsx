@@ -198,30 +198,31 @@ export default function RouletteWheel() {
         console.error("🚨 Failed to place bet:", error);
     }
 };
-
 const calculateWinnings = (number: number): number => {
   let winnings = 0;
   const redNumbers = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
 
-  // ✅ Only parse `betValue` to a number if betting on a number
-  const betNumber = betType === "number" ? parseInt(betValue as string, 10) : betValue;
+  // ✅ Convert betValue to number ONLY if betType is "number"
+  const betNumber = betType === "number" ? Number(betValue) : null;
+  const betString = betType !== "number" ? betValue : null;
 
   if (betType === "number") {
-      if (betNumber === number) {  // ✅ Now only numbers get converted
-          winnings = betAmount;  // Correct 35:1 payout
+      if (betNumber !== null && betNumber === number) {  // ✅ Ensure correct number comparison
+          winnings = betAmount * 35;  // Correct 35:1 payout
       }
   } else if (betType === "color") {
       const isRed = redNumbers.has(number);
-      if ((betValue === "red" && isRed) || (betValue === "black" && !isRed && number !== 0)) {
+      if ((betString === "red" && isRed) || (betString === "black" && !isRed && number !== 0)) {
           winnings = betAmount;
       }
   } else if (betType === "parity" && number !== 0) {
-      if ((betValue === "even" && number % 2 === 0) || (betValue === "odd" && number % 2 !== 0)) {
+      if ((betString === "even" && number % 2 === 0) || (betString === "odd" && number % 2 !== 0)) {
           winnings = betAmount;
       }
   }
   return winnings; 
 };
+
 
 
     
