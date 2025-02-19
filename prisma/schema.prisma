@@ -13,50 +13,43 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 model User {
-  id       String   @id @default(uuid())
-  email    String   @unique
-  name     String?
-  image    String?
-  balance  Int      @default(1000)
+  id      String  @id @default(uuid())
+  email   String  @unique
+  name    String?
+  image   String?
+  balance Int     @default(1000)
 
-  // Relations to other models
   accounts  Account[]
   sessions  Session[]
-  bets      Bet[]   // <--- Add this so we can do user.bets
 }
-
 model Account {
   id                String  @id @default(uuid())
   userId            String
   provider          String
   providerAccountId String
   type              String
-  access_token      String?  // For OAuth
-  refresh_token     String?
-  expires_at        Int?
-
-  // Relation back to User
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  access_token      String?  // 🔹 Used for OAuth login
+  refresh_token     String?  // 🔹 Required for Google refresh token
+  expires_at        Int?     // 🔹 Expiration time for access_token
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+
 
 model Session {
-  id      String   @id @default(uuid())
+  id      String  @id @default(uuid())
   userId  String
   expires DateTime
-
-  // Relation back to User
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model Bet {
-  id           String   @id @default(uuid())
-  userId       String
-  amount       Int
-  choice       String    // "5", "red", "black", "even", etc.
-  result       String    // "pending", "W", "L", etc.
-  tossedNumber Int?      // The actual number spun
-  createdAt    DateTime  @default(now())
 
-  // Relation back to User
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+model Bet {
+  id       String  @id @default(uuid())
+  userId   String
+  amount   Int
+  choice   String
+  result   String
+  tossedNumber  Int?
+  createdAt DateTime @default(now())
 }
