@@ -117,6 +117,7 @@ export default function RouletteWheel() {
   
     spin();
   };
+
   const updateBetResult = async (betId: string | null, result: number, winnings: number, betAmount: number) => {
     if (!betId) {
       console.error("🚨 updateBetResult: betId is missing", betId);
@@ -194,15 +195,14 @@ export default function RouletteWheel() {
   };
   
   
-  
-  
-  
   const calculateWinnings = (number: number): number => {
     let winnings = 0;
     const redNumbers = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
 
-    if (betType === "number" && betValue === number) {
-      winnings = betAmount * 15;
+    if (betType === "number") {
+      if(betValue === number){
+        winnings = betAmount * 10;
+      }
     } else if (betType === "color") {
       const isRed = redNumbers.has(number);
       if ((betValue === "red" && isRed) || (betValue === "black" && !isRed && number !== 0)) {
