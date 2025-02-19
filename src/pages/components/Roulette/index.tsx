@@ -168,7 +168,6 @@ export default function RouletteWheel() {
         console.error("❌ Bet failed due to invalid data:", { betAmount, betValue });
         return;
     }
-
     // Ensure choice is always a string
     const betChoice = typeof betValue === "number" ? betValue.toString() : betValue;
 
