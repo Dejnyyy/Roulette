@@ -200,14 +200,13 @@ export default function RouletteWheel() {
 };
 
 
-  
 const calculateWinnings = (number: number): number => {
   let winnings = 0;
   const redNumbers = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
 
   if (betType === "number") {
-      if (betValue == number) {  // ✅ Use `==` instead of `===`
-          winnings = betAmount * 35;  // Correct payout for a single-number bet
+      if (parseInt(betValue as string, 10) === number) {  // ✅ Ensure betValue is a number
+          winnings = betAmount * 35;  // Correct 35:1 payout
       }
   } else if (betType === "color") {
       const isRed = redNumbers.has(number);
@@ -221,6 +220,7 @@ const calculateWinnings = (number: number): number => {
   }
   return winnings; 
 };
+
 
     
   useEffect(() => {
