@@ -212,11 +212,10 @@ const calculateWinnings = (number: number): number => {
   const redNumbers = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
 
   console.log("🔎 Checking betType:", betType, "betValue:", betValue, "Type:", typeof betValue); // NEW LOGGING
-
   if (betType === "number") {
-      if (Number(betValue) === number) {  // ✅ Ensure number comparison works
-          winnings = betAmount * 35;  
-      }
+    if (Number(betValue) === number) {
+      winnings = betAmount * 35;
+    }
   } else if (betType === "color") {
       const isRed = redNumbers.has(number);
       if ((betValue === "red" && isRed) || (betValue === "black" && !isRed && number !== 0)) {

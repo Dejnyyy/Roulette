@@ -1,4 +1,3 @@
-// /pages/api/updateBet.ts
 import { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth/next";
@@ -17,8 +16,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const { betId, result, outcome, winnings, betAmount } = req.body;
-
-  // Log to check if betAmount is received correctly
   console.log("Received bet update request:", { betId, result, outcome, winnings, betAmount });
 
   if (!betId || result === undefined || !outcome || winnings === undefined || betAmount === undefined) {
@@ -26,41 +23,37 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const parsedBetId = typeof betId === "string" ? parseInt(betId, 10) : betId;
+    // Since betId is a UUID string, no need to parse it
     const updatedBet = await prisma.bet.update({
-      where: { id: parsedBetId },
+      where: { id: betId },
       data: {
-        result: outcome,
-        tossedNumber: result, // tossedNumber is an integer
+        result: outcome,      // "W" or "L"
+        tossedNumber: result, // The spun number
       },
     });
-    
 
     console.log("Updated bet with tossed number:", updatedBet);
 
-    // If winnings > 0 (win), update user balance by incrementing
     if (winnings > 0) {
       console.log(`User won! Updating balance for user: ${session.user.email}`);
       await prisma.user.update({
         where: { email: session.user.email },
-        data: {
-          balance: { increment: winnings }, // Add winnings to balance
-        },
+        data: { balance: { increment: winnings } },
       });
     } else {
-      // If outcome is a loss (outcome == "L"), subtract the bet amount
       console.log(`User lost! Deducting bet amount from balance for user: ${session.user.email}`);
       await prisma.user.update({
         where: { email: session.user.email },
-        data: {
-          balance: { decrement: betAmount }, // Subtract betAmount from balance
-        },
+        data: { balance: { decrement: betAmount } },
       });
     }
 
     return res.status(200).json(updatedBet);
   } catch (error) {
     console.error("Error updating bet:", error);
-    return res.status(500).json({ message: "Server error", error: error instanceof Error ? error.message : "Unknown error" });
+    return res.status(500).json({
+      message: "Server error",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 }
