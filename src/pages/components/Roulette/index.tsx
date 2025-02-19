@@ -50,21 +50,20 @@ export default function RouletteWheel() {
     fetchBalance();
   }, [session]);
   
-  
   useEffect(() => {
-    if(!session){
-      setBetValue(null);
-      return;
+    if (!session) {
+        setBetValue(null);
+        return;
     }
-    if (betType === "number") {
-      setBetValue(0); // Default to first number on wheel
-    } else if (betType === "color") {
-      setBetValue("red"); // Default to "red" for color bets
-    } else if (betType === "parity") {
-      setBetValue("even"); // Default to "even" for parity bets
-    }
-  }, [betType, session]);
-  
+
+    setBetValue((prev) => {
+        if (prev !== null) return prev; // Keep the user’s selection
+        if (betType === "number") return 0; // Only set to 0 if betValue was null
+        if (betType === "color") return "red";
+        if (betType === "parity") return "even";
+        return null;
+    });
+}, [betType, session]);
 
   const isSpinningRef = useRef(false); // ✅ Track spinning instantly
 
@@ -152,6 +151,8 @@ export default function RouletteWheel() {
       console.error("🚨 Error updating bet result:", error);
     }
   };
+
+  
   const placeBet = async () => {
     if (!session) {
         alert("You need to be logged in to place a bet!");
@@ -168,19 +169,20 @@ export default function RouletteWheel() {
         console.error("❌ Bet failed due to invalid data:", { betAmount, betValue });
         return;
     }
+
     // Ensure choice is always a string
     const betChoice = typeof betValue === "number" ? betValue.toString() : betValue;
+
+    console.log("📌 Sending bet request with:", { amount: betAmount, choice: betChoice });
 
     // Deduct the bet amount before sending the bet details
     setBalance((prev) => prev - betAmount);
 
     try {
-        console.log("📌 Sending bet request:", { amount: betAmount, choice: betChoice });
-
         const response = await fetch("/api/bet", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ amount: betAmount, choice: betChoice }), // Ensure it's always a string
+            body: JSON.stringify({ amount: betAmount, choice: betChoice }),
         });
 
         const data = await response.json();

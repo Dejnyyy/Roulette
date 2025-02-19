@@ -175,12 +175,12 @@ const Betting: React.FC<BettingProps> = ({
        max={numberCount - 1}
        value={betValue === null ? 0 : betValue}
        onChange={(e) => {
-         const val = Number(e.target.value);
-         // Check if the entered value is within the valid range
-         if (val >= 0 && val < numberCount) {
-           setBetValue(val);
-         }
-       }}
+        const val = Number(e.target.value);
+        if (!isNaN(val) && val >= 0 && val < numberCount) {
+            setBetValue(val); // This must be correctly setting the value
+        }
+     }}
+     
        disabled={spinning}
      />
      
