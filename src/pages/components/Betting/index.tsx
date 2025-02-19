@@ -169,21 +169,20 @@ const Betting: React.FC<BettingProps> = ({
       {betType === "number" ? (
        <input
        type="number"
-       className="w-40 bg-gray-800 text-white p-2 my-2 rounded-lg border border-gray-600 shadow-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+       className="w-40 bg-gray-800 text-white p-2 my-2 rounded-lg border border-gray-600 shadow-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
        placeholder="Choose Number"
        min="0"
        max={numberCount - 1}
-       value={betValue ?? ""}
+       value={betValue === null ? 0 : betValue}
        onChange={(e) => {
-         const val = Number(e.target.value);
-         console.log("🎯 Input changed, new betValue:", val); // NEW LOGGING
-         if (!isNaN(val) && val >= 0 && val < numberCount) {
-           setBetValue(val);
-         }
-       }}
+        const val = Number(e.target.value);
+        if (!isNaN(val) && val >= 0 && val < numberCount) {
+            setBetValue(val); // This must be correctly setting the value
+        }
+     }}
+     
        disabled={spinning}
      />
-     
      
       ) : (
         <select
