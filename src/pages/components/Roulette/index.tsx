@@ -201,25 +201,25 @@ export default function RouletteWheel() {
 
 
   
-  
-  const calculateWinnings = (number: number): number => {
-    let winnings = 0;
-    const redNumbers = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+const calculateWinnings = (number: number): number => {
+  let winnings = 0;
+  const redNumbers = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
 
-    if (betType === "number") {
-      setBetValue((prev) => (prev === null ? 0 : Number(prev))); // Ensure betValue is always a number
+  if (betType === "number") {
+      if (betValue == number) {  // ✅ Use `==` instead of `===`
+          winnings = betAmount * 35;  // Correct payout for a single-number bet
       }
-       else if (betType === "color") {
+  } else if (betType === "color") {
       const isRed = redNumbers.has(number);
       if ((betValue === "red" && isRed) || (betValue === "black" && !isRed && number !== 0)) {
-        winnings = betAmount;
+          winnings = betAmount;
       }
-    } else if (betType === "parity" && number !== 0) {
+  } else if (betType === "parity" && number !== 0) {
       if ((betValue === "even" && number % 2 === 0) || (betValue === "odd" && number % 2 !== 0)) {
-        winnings = betAmount;
+          winnings = betAmount;
       }
-    }
-    return winnings; 
+  }
+  return winnings; 
 };
 
     
