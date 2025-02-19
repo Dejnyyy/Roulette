@@ -135,8 +135,8 @@ export default function RouletteWheel() {
           result,
           outcome,
           winnings,
-          betAmount, // Make sure this is included
-        }),
+          betAmount
+        })
       });
   
       const data = await response.json();
@@ -154,45 +154,48 @@ export default function RouletteWheel() {
   };
   
   
-  
   const placeBet = async () => {
     if (!session) {
-      alert("You need to be logged in to place a bet!");
-      return;
+        alert("You need to be logged in to place a bet!");
+        return;
     }
-  
+
     if (spinning || isSpinningRef.current) {
-      console.log("🚨 Already spinning, bet not placed!");
-      return;
+        console.log("🚨 Already spinning, bet not placed!");
+        return;
     }
-  
-    if (betAmount > balance || betAmount <= 0 || betValue === null) {
-      alert("Invalid bet amount or selection.");
-      return;
+
+    console.log("🔍 Placing bet with:", { betAmount, betValue, betType });
+
+    if (betAmount > balance || betAmount <= 0 || betValue === null || betValue === undefined) {
+        alert("Invalid bet amount or selection.");
+        console.error("❌ Bet failed due to invalid data:", { betAmount, betValue });
+        return;
     }
-  
+
     // Deduct the bet amount before sending the bet details
-    setBalance((prev) => prev - betAmount); // ✅ Deduct here only ONCE when placing the bet
-    
+    setBalance((prev) => prev - betAmount); 
+
     try {
-      const response = await fetch("/api/bet", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: betAmount, choice: betValue }),
-      });
-  
-      const data = await response.json();
-  
-      if (response.ok && data.id) {
-        console.log("📌 Bet ID received:", data.id);
-        spinWheel(data.id);
-      } else {
-        console.error("🚨 Error placing bet:", data.message);
-      }
+        const response = await fetch("/api/bet", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ amount: betAmount, choice: betValue }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.id) {
+            console.log("📌 Bet ID received:", data.id);
+            spinWheel(data.id);
+        } else {
+            console.error("🚨 Error placing bet:", data.message);
+        }
     } catch (error) {
-      console.error("🚨 Failed to place bet:", error);
+        console.error("🚨 Failed to place bet:", error);
     }
-  };
+};
+
   
   
   const calculateWinnings = (number: number): number => {
@@ -200,10 +203,9 @@ export default function RouletteWheel() {
     const redNumbers = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
 
     if (betType === "number") {
-      if(betValue == number){
-        winnings = betAmount * 10;
+      setBetValue((prev) => (prev === null ? 0 : Number(prev))); // Ensure betValue is always a number
       }
-    } else if (betType === "color") {
+       else if (betType === "color") {
       const isRed = redNumbers.has(number);
       if ((betValue === "red" && isRed) || (betValue === "black" && !isRed && number !== 0)) {
         winnings = betAmount;
