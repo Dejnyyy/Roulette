@@ -27,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
         // Ensure the user exists in the database
-        let user = await prisma.user.findUnique({
+        const user = await prisma.user.findUnique({
             where: { email: session.user.email },
         });
 
