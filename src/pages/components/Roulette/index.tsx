@@ -151,7 +151,6 @@ export default function RouletteWheel() {
       console.error("🚨 Error updating bet result:", error);
     }
   };
-
   const placeBet = async () => {
     if (!session) {
         alert("You need to be logged in to place a bet!");
@@ -163,7 +162,7 @@ export default function RouletteWheel() {
         return;
     }
 
-    console.log("🔍 Checking betValue before sending:", betValue); // NEW LOGGING
+    console.log("🔍 Checking betValue before sending:", betValue, "Type:", typeof betValue);  // NEW LOGGING
 
     if (betAmount > balance || betAmount <= 0 || betValue === null || betValue === undefined) {
         alert("Invalid bet amount or selection.");
@@ -171,10 +170,10 @@ export default function RouletteWheel() {
         return;
     }
 
-    // Ensure choice is always a string (since Prisma expects a string)
-    const betChoice = typeof betValue === "number" ? betValue.toString() : betValue;
+    // ✅ Fix: Convert number bets to string, but leave other types unchanged
+    const betChoice = betType === "number" ? String(betValue) : betValue;
 
-    console.log("📌 Sending bet request with:", { amount: betAmount, choice: betChoice }); // NEW LOGGING
+    console.log("📌 Sending bet request with:", { amount: betAmount, choice: betChoice, type: typeof betChoice }); // NEW LOGGING
 
     // Deduct the bet amount before sending the bet details
     setBalance((prev) => prev - betAmount);
@@ -198,6 +197,9 @@ export default function RouletteWheel() {
         console.error("🚨 Failed to place bet:", error);
     }
 };
+
+
+
 const calculateWinnings = (number: number): number => {
   let winnings = 0;
   const redNumbers = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
