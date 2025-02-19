@@ -151,17 +151,17 @@ export default function RouletteWheel() {
       console.error("🚨 Error updating bet result:", error);
     }
   };
+
+
   const placeBet = async () => {
     if (!session) {
         alert("You need to be logged in to place a bet!");
         return;
     }
-
     if (spinning || isSpinningRef.current) {
         console.log("🚨 Already spinning, bet not placed!");
         return;
     }
-
     if (betAmount > balance || betAmount <= 0 || betValue === null || betValue === undefined) {
         alert("Invalid bet amount or selection.");
         console.error("❌ Bet failed due to invalid data:", { betAmount, betValue });
@@ -170,7 +170,6 @@ export default function RouletteWheel() {
 
     // Ensure choice is always a string
     const betChoice = typeof betValue === "number" ? betValue.toString() : betValue;
-
     console.log("📌 Sending bet request with:", { amount: betAmount, choice: betChoice });
 
     // Deduct the bet amount before sending the bet details
@@ -202,7 +201,7 @@ const calculateWinnings = (number: number): number => {
   let winnings = 0;
   const redNumbers = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
 
-  console.log("🔎 Checking betType:", betType, "betValue:", betValue, "Type:", typeof betValue); // NEW LOGGING
+  console.log("🔎 Checking betType:", betType, "betValue:", betValue, "Type:", typeof betValue);
   if (betType === "number") {
     if (Number(betValue) === number) {
       winnings = betAmount * 35;

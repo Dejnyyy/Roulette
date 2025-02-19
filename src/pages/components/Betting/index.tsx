@@ -154,16 +154,27 @@ const Betting: React.FC<BettingProps> = ({
       </div>
 
       {/* Bet Type Selection */}
-      <select
-        className="w-40 bg-gray-800 text-white p-2 mt-4 rounded-lg border border-gray-600 shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
-        value={betType}
-        onChange={(e) => setBetType(e.target.value)}
-        disabled={spinning}
-      >
-        <option value="number">Number</option>
-        <option value="color">Color</option>
-        <option value="parity">Even/Odd</option>
-      </select>
+        <select
+          className="w-40 bg-gray-800 text-white p-2 mt-4 rounded-lg border border-gray-600 shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          value={betType}
+          onChange={(e) => {
+            const newType = e.target.value;
+            setBetType(newType);
+            
+            // Reset betValue when changing betType
+            if (newType === "number") {
+              setBetValue(0); // Default number
+            } else {
+              setBetValue(null); // Reset for color/parity
+            }
+          }}
+          disabled={spinning}
+        >
+          <option value="number">Number</option>
+          <option value="color">Color</option>
+          <option value="parity">Even/Odd</option>
+        </select>
+
 
       {/* Bet Value Input */}
       {betType === "number" ? (
@@ -187,7 +198,7 @@ const Betting: React.FC<BettingProps> = ({
       ) : (
         <select
           className="w-40 bg-gray-800 text-white p-2 my-2 rounded-lg border border-gray-600 shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          value={betValue as string}
+          value={betValue ? betValue.toString() : ""}
           onChange={(e) =>
             setBetValue(e.target.value as "red" | "black" | "even" | "odd")
           }
