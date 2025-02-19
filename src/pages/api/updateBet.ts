@@ -26,14 +26,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Update the bet with the result and outcome (win/loss)
+    const parsedBetId = typeof betId === "string" ? parseInt(betId, 10) : betId;
     const updatedBet = await prisma.bet.update({
-      where: { id: betId },
+      where: { id: parsedBetId },
       data: {
         result: outcome,
-        tossedNumber: result, // Store the actual tossed number
+        tossedNumber: result, // tossedNumber is an integer
       },
     });
+    
 
     console.log("Updated bet with tossed number:", updatedBet);
 
