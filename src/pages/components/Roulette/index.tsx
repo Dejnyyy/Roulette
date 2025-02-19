@@ -216,7 +216,7 @@ const calculateWinnings = (number: number): number => {
 
   if (betType === "number") {
     if (typeof betValue === "number" && betValue === number) { // ✅ Ensure betValue is a number
-      winnings = betAmount * 17.5;
+      winnings = betAmount * 35;
     }
   } else if (betType === "color") {
       const isRed = redNumbers.has(number);
