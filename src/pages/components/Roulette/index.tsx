@@ -152,8 +152,6 @@ export default function RouletteWheel() {
       console.error("🚨 Error updating bet result:", error);
     }
   };
-  
-  
   const placeBet = async () => {
     if (!session) {
         alert("You need to be logged in to place a bet!");
@@ -165,22 +163,25 @@ export default function RouletteWheel() {
         return;
     }
 
-    console.log("🔍 Placing bet with:", { betAmount, betValue, betType });
-
     if (betAmount > balance || betAmount <= 0 || betValue === null || betValue === undefined) {
         alert("Invalid bet amount or selection.");
         console.error("❌ Bet failed due to invalid data:", { betAmount, betValue });
         return;
     }
 
+    // Ensure choice is always a string
+    const betChoice = typeof betValue === "number" ? betValue.toString() : betValue;
+
     // Deduct the bet amount before sending the bet details
-    setBalance((prev) => prev - betAmount); 
+    setBalance((prev) => prev - betAmount);
 
     try {
+        console.log("📌 Sending bet request:", { amount: betAmount, choice: betChoice });
+
         const response = await fetch("/api/bet", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ amount: betAmount, choice: betValue }),
+            body: JSON.stringify({ amount: betAmount, choice: betChoice }), // Ensure it's always a string
         });
 
         const data = await response.json();
@@ -195,6 +196,7 @@ export default function RouletteWheel() {
         console.error("🚨 Failed to place bet:", error);
     }
 };
+
 
   
   
