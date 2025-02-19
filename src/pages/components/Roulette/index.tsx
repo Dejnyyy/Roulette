@@ -199,14 +199,16 @@ export default function RouletteWheel() {
     }
 };
 
-
 const calculateWinnings = (number: number): number => {
   let winnings = 0;
   const redNumbers = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
 
+  // ✅ Only parse `betValue` to a number if betting on a number
+  const betNumber = betType === "number" ? parseInt(betValue as string, 10) : betValue;
+
   if (betType === "number") {
-      if (parseInt(betValue as string, 10) === number) {  // ✅ Ensure betValue is a number
-          winnings = betAmount;
+      if (betNumber === number) {  // ✅ Now only numbers get converted
+          winnings = betAmount;  // Correct 35:1 payout
       }
   } else if (betType === "color") {
       const isRed = redNumbers.has(number);
