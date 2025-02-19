@@ -186,11 +186,12 @@ const Betting: React.FC<BettingProps> = ({
        max={numberCount - 1}
        value={betValue === null ? 0 : betValue}
        onChange={(e) => {
-        const val = Number(e.target.value);
+        const val = parseInt(e.target.value, 10); // Ensure it's always a number
         if (!isNaN(val) && val >= 0 && val < numberCount) {
-            setBetValue(val); // This must be correctly setting the value
+          setBetValue(val); 
         }
-     }}
+      }}
+      
      
        disabled={spinning}
      />
