@@ -223,7 +223,7 @@ export default function RouletteWheel() {
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 640) {
-        setTranslateY(170); // Small screens
+        setTranslateY(160); // Small screens
       } else if (window.innerWidth < 1024) {
         setTranslateY(170); // Medium screens
       } else {
