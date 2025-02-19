@@ -116,15 +116,14 @@ export default function RouletteWheel() {
   
     spin();
   };
-
   const updateBetResult = async (betId: string | null, result: number, winnings: number, betAmount: number) => {
     if (!betId) {
       console.error("🚨 updateBetResult: betId is missing", betId);
       return;
     }
-  
+
     const outcome = winnings > 0 ? "W" : "L";
-  
+
     try {
       const response = await fetch("/api/updateBet", {
         method: "POST",
@@ -137,21 +136,34 @@ export default function RouletteWheel() {
           betAmount
         })
       });
-  
+
       const data = await response.json();
       if (response.ok) {
         console.log("✅ Bet updated:", data);
-        if (outcome === "W") {
-          setBalance((prev) => prev + winnings); // Add winnings if won
-        }
+
+        // 🔥 Instead of manually adjusting, fetch the correct balance from backend
+        fetchUpdatedBalance();
       } else {
         console.error("🚨 Error updating bet:", data.message);
       }
     } catch (error) {
       console.error("🚨 Error updating bet result:", error);
     }
-  };
+};
 
+const fetchUpdatedBalance = async () => {
+  try {
+      const res = await fetch("/api/balance");
+      const data = await res.json();
+      if (res.ok) {
+          setBalance(data.balance); // ✅ Get correct balance from backend
+      } else {
+          console.error("Failed to fetch balance:", data.message);
+      }
+  } catch (error) {
+      console.error("Error fetching updated balance:", error);
+  }
+};
 
   const placeBet = async () => {
     if (!session) {
@@ -169,7 +181,7 @@ export default function RouletteWheel() {
     }
 
     // Ensure choice is always a string
-    const betChoice = typeof betValue === "number" ? betValue.toString() : betValue;
+    const betChoice = typeof betValue === "number" ? betValue : betValue.toString();
     console.log("📌 Sending bet request with:", { amount: betAmount, choice: betChoice });
 
     // Deduct the bet amount before sending the bet details
@@ -196,29 +208,32 @@ export default function RouletteWheel() {
 };
 
 
-
 const calculateWinnings = (number: number): number => {
   let winnings = 0;
   const redNumbers = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
 
   console.log("🔎 Checking betType:", betType, "betValue:", betValue, "Type:", typeof betValue);
+
   if (betType === "number") {
-    if (Number(betValue) === number) {
-      winnings = betAmount * 35;
+    if (typeof betValue === "number" && betValue === number) { // ✅ Ensure betValue is a number
+      winnings = betAmount;
     }
   } else if (betType === "color") {
       const isRed = redNumbers.has(number);
-      if ((betValue === "red" && isRed) || (betValue === "black" && !isRed && number !== 0)) {
+      if ((betValue === "red" && isRed) || (betValue === "black" && !isRed)) { // ✅ Prevents 0 from being black
           winnings = betAmount;
       }
-  } else if (betType === "parity" && number !== 0) {
+  } else if (betType === "parity") {
+      if (number === 0) return 0; // ✅ Prevents 0 from winning
       if ((betValue === "even" && number % 2 === 0) || (betValue === "odd" && number % 2 !== 0)) {
           winnings = betAmount;
       }
   }
+
   console.log("🎯 Calculated winnings:", winnings);
   return winnings;
 };
+
 
 
 

@@ -43,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       data: {
         userId: user.id, // Make sure user.id exists
         amount: Number(amount),
-        choice: String(choice),
+        choice, // ✅ Keep numbers as numbers
         createdAt: new Date(),
         result: "pending", // Default result
       },
