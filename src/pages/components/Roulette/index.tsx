@@ -150,7 +150,10 @@ export default function RouletteWheel() {
     } catch (error) {
       console.error("🚨 Error updating bet result:", error);
     }
-  };const placeBet = async () => {
+  };
+  
+  
+  const placeBet = async () => {
     if (!session) {
         alert("You need to be logged in to place a bet!");
         return;
@@ -170,7 +173,15 @@ export default function RouletteWheel() {
     }
 
     // ✅ Ensure correct type before sending to API
-    const betChoice = betType === "number" ? String(betValue) : betValue; // Allow strings for red, black, even, odd
+    let betChoice;
+    if (betType === "number") {
+        betChoice = String(betValue); // Convert numbers to strings
+    } else if (betType === "color" || betType === "parity") {
+        betChoice = betValue; // ✅ Keep strings as they are
+    } else {
+        console.error("🚨 Invalid bet type:", betType);
+        return;
+    }
 
     console.log("📌 Sending bet request with:", { amount: betAmount, choice: betChoice, type: typeof betChoice });
 
