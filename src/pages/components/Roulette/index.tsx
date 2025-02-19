@@ -150,8 +150,7 @@ export default function RouletteWheel() {
     } catch (error) {
       console.error("🚨 Error updating bet result:", error);
     }
-  };
-  const placeBet = async () => {
+  };const placeBet = async () => {
     if (!session) {
         alert("You need to be logged in to place a bet!");
         return;
@@ -162,7 +161,7 @@ export default function RouletteWheel() {
         return;
     }
 
-    console.log("🔍 Checking betValue before sending:", betValue, "Type:", typeof betValue);  // NEW LOGGING
+    console.log("🔍 Checking betValue before sending:", betValue, "Type:", typeof betValue);
 
     if (betAmount > balance || betAmount <= 0 || betValue === null || betValue === undefined) {
         alert("Invalid bet amount or selection.");
@@ -170,13 +169,10 @@ export default function RouletteWheel() {
         return;
     }
 
-    // ✅ Fix: Convert number bets to string, but leave other types unchanged
-    const betChoice = betType === "number" ? String(betValue) : betValue;
+    // ✅ Ensure correct type before sending to API
+    const betChoice = betType === "number" ? String(betValue) : betValue; // Allow strings for red, black, even, odd
 
-    console.log("📌 Sending bet request with:", { amount: betAmount, choice: betChoice, type: typeof betChoice }); // NEW LOGGING
-
-    // Deduct the bet amount before sending the bet details
-    setBalance((prev) => prev - betAmount);
+    console.log("📌 Sending bet request with:", { amount: betAmount, choice: betChoice, type: typeof betChoice });
 
     try {
         const response = await fetch("/api/bet", {
@@ -204,25 +200,24 @@ const calculateWinnings = (number: number): number => {
   let winnings = 0;
   const redNumbers = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
 
-  // ✅ Convert betValue to number ONLY if betType is "number"
-  const betNumber = betType === "number" ? Number(betValue) : null;
-  const betString = betType !== "number" ? betValue : null;
+  console.log("🔎 Checking betType:", betType, "betValue:", betValue, "Type:", typeof betValue); // NEW LOGGING
 
   if (betType === "number") {
-      if (betNumber !== null && betNumber === number) {  // ✅ Ensure correct number comparison
-          winnings = betAmount * 35;  // Correct 35:1 payout
+      if (Number(betValue) === number) {  // ✅ Ensure number comparison works
+          winnings = betAmount * 35;  
       }
   } else if (betType === "color") {
       const isRed = redNumbers.has(number);
-      if ((betString === "red" && isRed) || (betString === "black" && !isRed && number !== 0)) {
+      if ((betValue === "red" && isRed) || (betValue === "black" && !isRed && number !== 0)) {
           winnings = betAmount;
       }
   } else if (betType === "parity" && number !== 0) {
-      if ((betString === "even" && number % 2 === 0) || (betString === "odd" && number % 2 !== 0)) {
+      if ((betValue === "even" && number % 2 === 0) || (betValue === "odd" && number % 2 !== 0)) {
           winnings = betAmount;
       }
   }
-  return winnings; 
+  console.log("🎯 Calculated winnings:", winnings);
+  return winnings;
 };
 
 
