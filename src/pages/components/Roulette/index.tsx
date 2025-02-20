@@ -288,9 +288,7 @@ const calculateWinnings = (number: number): number => {
 <motion.h1
   className="text-5xl font-extrabold mb-6 text-gold drop-shadow-md text-center absolute top-32 md:static md:top-auto"
   animate={spinning ? { rotateY: 90 } : { rotateY: [0, 90, 0] }}
-  transition={spinning 
-    ? { repeat: Infinity, duration: 1, ease: "easeInOut" } 
-    : { repeat: Infinity, duration: 3, ease: "easeInOut" }}
+  transition={{repeat: Infinity, duration: 3, ease: "easeInOut"} }
 >
   Dejny&apos;s Roulette
 </motion.h1>      {session && (
