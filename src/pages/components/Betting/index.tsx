@@ -43,7 +43,7 @@ const Betting: React.FC<BettingProps> = ({
   };
 
   return (
-    <div className="mb-4 ml-4 md:ml-8 rounded-xl border p-8 flex flex-col items-center font-mono font-semibold text-white">
+    <div className="mb-4 ml-4 rounded-xl border p-8 flex flex-col items-center font-mono font-semibold text-white">
       <p>
         Bet -{" "}
         <span className="text-yellow-400 font-semibold font-mono">

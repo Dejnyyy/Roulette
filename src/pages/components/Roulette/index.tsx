@@ -284,11 +284,13 @@ const calculateWinnings = (number: number): number => {
             height={25}
             className="rounded-full border-2 w-10 ml-4 border-white shadow-lg"
           />
-        )}      </div>
+        )} </div>
       <h1 className="text-5xl font-extrabold mb-6 text-gold drop-shadow-md text-center absolute top-32 md:static md:top-auto">Dejny&apos;s Roulette</h1>
+      {session && (
       <p className="absolute shadow-md hover:scale-110 transition-all duration-150 ease-in-out cursor-pointer top-16 left-4 px-4 py-2 bg-white text-black rounded-xl font-bold">
         Balance: <span className="font-mono">{balance}</span>
       </p>
+      )}
       
       {/* ROULETTE WHEEL */}
       <div className="relative mt-20 md:mt-0 sm:w-[300px] sm:h-[300px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px] flex items-center justify-center">
@@ -318,8 +320,8 @@ const calculateWinnings = (number: number): number => {
       </div>
 
         {/* Betting Component */}
-        <div className="relative mt-40 sm:mt-64 md:absolute md:left-0 md:ml-4">
-            
+        <div className="relative mt-40 sm:mt-64 md:absolute md:left-0">
+        {session && (
         <Betting 
                 balance={balance} 
                 betAmount={betAmount} 
@@ -331,6 +333,7 @@ const calculateWinnings = (number: number): number => {
                 numberCount={wheelNumbers.length}
                 spinning={spinning}
             />
+          )} 
         </div>
       {/* SPIN BUTTON */}
       <div className="relative flex flex-col items-center group">
