@@ -291,7 +291,8 @@ const calculateWinnings = (number: number): number => {
   transition={{repeat: Infinity, duration: 3, ease: "easeInOut"} }
 >
   Dejny&apos;s Roulette
-</motion.h1>      {session && (
+</motion.h1>
+  {session && (
       <p className="absolute shadow-md hover:scale-110 transition-all duration-150 ease-in-out cursor-pointer top-16 left-4 px-4 py-2 bg-white text-black rounded-xl font-bold">
         Balance: <span className="font-mono">{balance}</span>
       </p>
