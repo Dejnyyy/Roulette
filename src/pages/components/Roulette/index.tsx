@@ -340,7 +340,7 @@ const calculateWinnings = (number: number): number => {
             if (button) button.disabled = true; // ✅ Disable it instantly
             placeBet();
         }}
-        className="mt-8 px-6 mb-8 py-3 bg-gold text-black font-semibold rounded-xl shadow-lg hover:shadow-2xl transition duration-300 ease-in-out disabled:opacity-50 relative"
+        className="mt-8 px-6 mb-8 md:mb-0 py-3 bg-gold text-black font-semibold rounded-xl shadow-lg hover:shadow-2xl transition duration-300 ease-in-out disabled:opacity-50 relative"
         disabled={spinning || betAmount <= 0 || betValue === null || betAmount > balance}
         >
         {spinning ? "Spinning..." : "Spin the Wheel"}
@@ -363,7 +363,7 @@ const calculateWinnings = (number: number): number => {
   )}
 </div>
 {/* HISTORY BAR */}
-<div className="absolute top-4 right-4 md:bottom-4 md:top-none flex gap-1 sm:gap-2 flex-wrap sm:flex-nowrap">
+<div className="absolute top-4 right-4 md:bottom-4 flex gap-1 sm:gap-2 flex-wrap sm:flex-nowrap">
   {history.map((num, index) => (
     <div
       key={index}
