@@ -285,8 +285,15 @@ const calculateWinnings = (number: number): number => {
             className="rounded-full border-2 w-10 ml-4 border-white shadow-lg"
           />
         )} </div>
-      <h1 className="text-5xl font-extrabold mb-6 text-gold drop-shadow-md text-center absolute top-32 md:static md:top-auto">Dejny&apos;s Roulette</h1>
-      {session && (
+<motion.h1
+  className="text-5xl font-extrabold mb-6 text-gold drop-shadow-md text-center absolute top-32 md:static md:top-auto"
+  animate={spinning ? { rotateY: 90 } : { rotateY: [0, 90, 0] }}
+  transition={spinning 
+    ? { repeat: Infinity, duration: 1.5, ease: "linear" } 
+    : { repeat: Infinity, duration: 3, ease: "easeInOut" }}
+>
+  Dejny&apos;s Roulette
+</motion.h1>      {session && (
       <p className="absolute shadow-md hover:scale-110 transition-all duration-150 ease-in-out cursor-pointer top-16 left-4 px-4 py-2 bg-white text-black rounded-xl font-bold">
         Balance: <span className="font-mono">{balance}</span>
       </p>
