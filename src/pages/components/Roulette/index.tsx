@@ -363,7 +363,7 @@ const calculateWinnings = (number: number): number => {
   )}
 </div>
 {/* HISTORY BAR */}
-<div className="absolute top-4 right-4 md:bottom-4 flex gap-1 sm:gap-2 flex-wrap sm:flex-nowrap">
+<div className="absolute top-4 right-4 md:bottom-4 md:top-full flex gap-1 sm:gap-2 flex-wrap sm:flex-nowrap">
   {history.map((num, index) => (
     <div
       key={index}
