@@ -311,8 +311,10 @@ const calculateWinnings = (number: number): number => {
   <motion.div
   className={`w-20 h-20 flex items-center justify-center text-white rounded-full font-bold text-2xl 
     ${getColor(spinning ? null : result)} ${getBorderColor(spinning ? null : result)} border-4`}
-  animate={spinning ? { rotate: 360 } : { scale: [1.2, 1] }}
-  transition={spinning ? { repeat: Infinity, duration: 1, ease: "linear" } : { duration: 0.3, ease: "easeOut" }}
+  animate={spinning ? { scale: [1, 1.1, 1], opacity: [0.8, 1, 0.8] } : { scale: [1.2, 1] }}
+  transition={spinning 
+    ? { repeat: Infinity, duration: 0.8, ease: "easeInOut" } 
+    : { duration: 0.3, ease: "easeOut" }}
 >
   {spinning ? "" : result !== null ? result : ""}
 </motion.div>
