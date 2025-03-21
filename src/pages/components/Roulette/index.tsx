@@ -286,17 +286,40 @@ export default function RouletteWheel() {
   };
 
   // ⭐ Handle secret phrase
-  const handleSecretSubmit = () => {
-    if (secretInput.trim() === SECRET_PHRASE) {
-      // Add +1000 to balance
-      setBalance((prev) => prev + 1000);
+  // 1) On the frontend (same RouletteWheel component):
+const handleSecretSubmit = async () => {
+  if (secretInput.trim() === SECRET_PHRASE) {
+    try {
+      // Call your custom API route to add balance
+      const response = await fetch("/api/addBalance", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ amount: 1000 }), // or whatever amount you want to add
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to add balance");
+      }
+
+      // If your route returns the updated (new) balance:
+      setBalance(data.newBalance);
+
       setSecretError("");
       setShowModal(false);
       setSecretInput("");
-    } else {
-      setSecretError("Incorrect secret phrase!");
+    } catch (error) {
+      console.error("🚨 Error adding balance:", error);
+      setSecretError("Error adding balance. Please try again.");
     }
-  };
+  } else {
+    setSecretError("Incorrect secret phrase!");
+  }
+};
+
 
   return (
     <div className="flex flex-col items-center justify-center text-white">
