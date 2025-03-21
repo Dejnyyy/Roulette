@@ -340,7 +340,7 @@ export default function RouletteWheel() {
             setSecretError("");
             setSecretInput("");
           }}
-          className="absolute top-16 text-black font-semibold right-4 px-4 py-2 bg-white rounded-md text-sm hover:bg-gray-400 transition-colors"
+          className="absolute top-16 text-black font-semibold right-4 px-4 py-2 bg-white rounded-lg text-md hover:bg-gray-400 transition-colors"
         >
           CODES
         </button>
