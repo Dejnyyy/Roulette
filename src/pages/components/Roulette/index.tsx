@@ -471,7 +471,7 @@ export default function RouletteWheel() {
               </button>
               <button
                 onClick={handleSecretSubmit}
-                className="px-4 py-2 bg-white border-gray-200 text-black font-semibold rounded-md hover:bg-gray-200"
+                className="px-4 py-2 bg-white border-gray-200 border text-black font-semibold rounded-md hover:bg-gray-200"
               >
                 $$$$$
               </button>
