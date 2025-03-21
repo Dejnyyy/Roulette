@@ -342,7 +342,7 @@ export default function RouletteWheel() {
           }}
           className="absolute top-16 text-black font-semiold right-4 px-4 py-2 bg-white rounded-md text-sm hover:bg-gray-400 transition-colors"
         >
-          Enter Secret
+          Codes:
         </button>
       )}
 
@@ -473,7 +473,7 @@ export default function RouletteWheel() {
                 onClick={handleSecretSubmit}
                 className="px-4 py-2 bg-white text-black font-semibold rounded-md hover:bg-gray-400"
               >
-                Unlock
+                $$$$$
               </button>
             </div>
           </div>
