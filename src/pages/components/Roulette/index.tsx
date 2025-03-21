@@ -15,7 +15,7 @@ const wheelNumbers = [
 ];
 
 // ⭐ Choose your secret phrase here
-const SECRET_PHRASE = "OpenSesame";
+const SECRET_PHRASE = "gimmiemoneydejny";
 
 export default function RouletteWheel() {
   const { data: session } = useSession();
