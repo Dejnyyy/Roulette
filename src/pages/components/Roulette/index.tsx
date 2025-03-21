@@ -340,7 +340,7 @@ export default function RouletteWheel() {
             setSecretError("");
             setSecretInput("");
           }}
-          className="absolute top-16 right-4 px-3 py-1 bg-blue-600 rounded-md text-sm hover:bg-blue-400 transition-colors"
+          className="absolute top-16 text-black font-semiold right-4 px-4 py-2 bg-white rounded-md text-sm hover:bg-gray-400 transition-colors"
         >
           Enter Secret
         </button>
@@ -453,7 +453,7 @@ export default function RouletteWheel() {
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-70">
           <div className="bg-white p-4 rounded-md w-[300px] relative">
-            <h2 className="text-lg font-bold mb-2">Enter Secret Phrase</h2>
+            <h2 className="text-lg font-bold mb-2 text-black">Enter Secret Phrase</h2>
             <input
               className="w-full px-2 py-1 border border-gray-300 rounded-md mb-2 text-black"
               type="text"
@@ -471,7 +471,7 @@ export default function RouletteWheel() {
               </button>
               <button
                 onClick={handleSecretSubmit}
-                className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-400"
+                className="px-4 py-2 bg-white text-black font-semibold rounded-md hover:bg-gray-400"
               >
                 Unlock
               </button>
