@@ -11,7 +11,7 @@ import Image from "next/image";
 
 const wheelNumbers = [
   0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24,
-  16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26
+  16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26,
 ];
 
 // ⭐ Choose your secret phrase here
@@ -25,7 +25,9 @@ export default function RouletteWheel() {
   const [balance, setBalance] = useState<number>(0);
   const [betAmount, setBetAmount] = useState(0);
   const [betType, setBetType] = useState("number");
-  const [betValue, setBetValue] = useState<number | "red" | "black" | "even" | "odd" | null>(null);
+  const [betValue, setBetValue] = useState<
+    number | "red" | "black" | "even" | "odd" | null
+  >(null);
 
   // 🔄 Spinning and Result
   const [spinning, setSpinning] = useState(false);
@@ -64,22 +66,22 @@ export default function RouletteWheel() {
     fetchBalance();
   }, [session]);
 
-  // 🚦 If session changes or bet type changes, reset betValue accordingly
+  // 🚦 Reset betValue when bet type or session changes
   useEffect(() => {
     if (!session) {
       setBetValue(null);
       return;
     }
     setBetValue((prev) => {
-      if (prev !== null) return prev; 
-      if (betType === "number") return 0; 
+      if (prev !== null) return prev;
+      if (betType === "number") return 0;
       if (betType === "color") return "red";
       if (betType === "parity") return "even";
       return null;
     });
   }, [betType, session]);
 
-  // 🔄 Spin the Wheel
+  // 🔄 Spin the Wheel (unchanged logic)
   const spinWheel = (betId?: string) => {
     if (isSpinningRef.current) return;
     isSpinningRef.current = true;
@@ -92,7 +94,8 @@ export default function RouletteWheel() {
     const newResult = wheelNumbers[finalIndex];
 
     let currentIndex = result !== null ? wheelNumbers.indexOf(result) : 0;
-    const totalSpins = wheelNumbers.length * 3 + finalIndex + Math.floor(Math.random() * 10);
+    const totalSpins =
+      wheelNumbers.length * 3 + finalIndex + Math.floor(Math.random() * 10);
     let spinsCompleted = 0;
     let intervalTime = 20;
 
@@ -100,10 +103,13 @@ export default function RouletteWheel() {
       setHighlightIndex(currentIndex % wheelNumbers.length);
       spinsCompleted++;
 
-      if (spinsCompleted >= totalSpins && currentIndex % wheelNumbers.length === finalIndex) {
+      if (
+        spinsCompleted >= totalSpins &&
+        currentIndex % wheelNumbers.length === finalIndex
+      ) {
         setTimeout(async () => {
           setResult(newResult);
-          setHistory((prev) => [newResult, ...prev.slice(0, 4)]);
+          setHistory((prev) => [newResult, ...prev.slice(0, 6)]);
 
           const winnings = calculateWinnings(newResult);
           if (betId) {
@@ -121,7 +127,7 @@ export default function RouletteWheel() {
         return;
       }
 
-      intervalTime = Math.min(25, intervalTime * 10);
+      intervalTime = Math.min(25, intervalTime * 10); // keeping your original timing behavior
       setTimeout(spin, intervalTime);
       currentIndex++;
     };
@@ -157,7 +163,6 @@ export default function RouletteWheel() {
 
       const data = await response.json();
       if (response.ok) {
-        console.log("✅ Bet updated:", data);
         fetchUpdatedBalance();
       } else {
         console.error("🚨 Error updating bet:", data.message);
@@ -188,17 +193,20 @@ export default function RouletteWheel() {
       return;
     }
     if (spinning || isSpinningRef.current) {
-      console.log("🚨 Already spinning, bet not placed!");
       return;
     }
-    if (betAmount > balance || betAmount <= 0 || betValue === null || betValue === undefined) {
+    if (
+      betAmount > balance ||
+      betAmount <= 0 ||
+      betValue === null ||
+      betValue === undefined
+    ) {
       alert("Invalid bet amount or selection.");
-      console.error("❌ Bet failed due to invalid data:", { betAmount, betValue });
       return;
     }
 
-    const betChoice = typeof betValue === "number" ? betValue : betValue.toString();
-    console.log("📌 Sending bet request with:", { amount: betAmount, choice: betChoice });
+    const betChoice =
+      typeof betValue === "number" ? betValue : betValue.toString();
 
     // Deduct the bet amount locally
     setBalance((prev) => prev - betAmount);
@@ -212,7 +220,6 @@ export default function RouletteWheel() {
 
       const data = await response.json();
       if (response.ok && data.id) {
-        console.log("📌 Bet ID received:", data.id);
         spinWheel(data.id);
       } else {
         console.error("🚨 Error placing bet:", data.message);
@@ -222,7 +229,7 @@ export default function RouletteWheel() {
     }
   };
 
-  // 💵 Calculate Winnings
+  // 💵 Calculate Winnings (unchanged)
   const calculateWinnings = (number: number): number => {
     let winnings = 0;
     const redNumbers = new Set([
@@ -235,10 +242,7 @@ export default function RouletteWheel() {
       }
     } else if (betType === "color") {
       const isRed = redNumbers.has(number);
-      if (
-        (betValue === "red" && isRed) ||
-        (betValue === "black" && !isRed)
-      ) {
+      if ((betValue === "red" && isRed) || (betValue === "black" && !isRed)) {
         winnings = betAmount;
       }
     } else if (betType === "parity") {
@@ -253,7 +257,7 @@ export default function RouletteWheel() {
     return winnings;
   };
 
-  // 🌐 Handle screen resizing
+  // 🌐 Responsive translateY
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 640) {
@@ -269,232 +273,266 @@ export default function RouletteWheel() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // 🟢 Styling Helpers
+  // 🟢 Styling Helpers (unchanged logic, nicer colors)
   const getColor = (num: number | null, isHighlighted: boolean = false) => {
-    if (num === null) return "bg-gray-700";
-    if (num === 0) return "bg-green-500";
+    if (num === null) return "bg-neutral-700";
+    if (num === 0) return "bg-emerald-500";
     const baseColor =
-      wheelNumbers.indexOf(num) % 2 === 0 ? "bg-black" : "bg-red-500";
-    return isHighlighted ? "bg-yellow-400 border-yellow-400" : baseColor;
+      wheelNumbers.indexOf(num) % 2 === 0 ? "bg-neutral-900" : "bg-red-600";
+    return isHighlighted
+      ? "bg-yellow-400 border-yellow-400 ring-4 ring-yellow-300/60"
+      : baseColor;
   };
 
   const getBorderColor = (num: number | null) => {
-    if (num === 0) return "border-green-400";
+    if (num === 0) return "border-emerald-300";
     return wheelNumbers.indexOf(num ?? -1) % 2 !== 0
-      ? "border-red-400"
-      : "border-gray-400";
+      ? "border-red-300/70"
+      : "border-neutral-400/60";
   };
 
-  // ⭐ Handle secret phrase
-  // 1) On the frontend (same RouletteWheel component):
-const handleSecretSubmit = async () => {
-  if (secretInput.trim() === SECRET_PHRASE) {
-    try {
-      // Call your custom API route to add balance
-      const response = await fetch("/api/addBalance", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ amount: 1000 }), // or whatever amount you want to add
-      });
+  // ⭐ Secret phrase handler (unchanged)
+  const handleSecretSubmit = async () => {
+    if (secretInput.trim() === SECRET_PHRASE) {
+      try {
+        const response = await fetch("/api/addBalance", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ amount: 1000 }),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to add balance");
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to add balance");
+        }
+
+        setBalance(data.newBalance);
+        setSecretError("");
+        setShowModal(false);
+        setSecretInput("");
+      } catch (error) {
+        console.error("🚨 Error adding balance:", error);
+        setSecretError("Error adding balance. Please try again.");
       }
-
-      // If your route returns the updated (new) balance:
-      setBalance(data.newBalance);
-
-      setSecretError("");
-      setShowModal(false);
-      setSecretInput("");
-    } catch (error) {
-      console.error("🚨 Error adding balance:", error);
-      setSecretError("Error adding balance. Please try again.");
+    } else {
+      setSecretError("Incorrect secret phrase!");
     }
-  } else {
-    setSecretError("Incorrect secret phrase!");
-  }
-};
-
+  };
 
   return (
-    <div className="flex flex-col items-center justify-center text-white">
+    <div className="relative w-full max-w-6xl">
       {showConfetti && <Confetti numberOfPieces={600} recycle={false} />}
-      
-      {/* Sign In + Profile Picture */}
-      <div className="absolute top-4 left-4 flex flex-row">
-        <Sign />
+
+      {/* Header */}
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <Sign />
+          {session && (
+            <div className="flex items-center gap-2">
+              <Image
+                src={imageUrl}
+                alt="User's profile picture"
+                width={36}
+                height={36}
+                className="rounded-full border border-white/20 shadow"
+              />
+              <p className="hidden sm:block text-xs md:text-sm text-white/70">
+                Welcome back {session.user.name}
+              </p>
+            </div>
+          )}
+        </div>
+
         {session && (
-          <Image
-            src={imageUrl}
-            alt="User's profile picture"
-            width={25}
-            height={25}
-            className="rounded-full border-2 w-10 ml-4 border-white shadow-lg"
-          />
+          <div className="flex items-center gap-2">
+            <span className="rounded-full bg-white/10 px-4 py-1.5 text-sm font-semibold text-white/90 backdrop-blur border border-white/20 shadow-sm">
+              Balance:{" "}
+              <span className="font-mono text-amber-300">{balance}</span>
+            </span>
+            <button
+              onClick={() => {
+                setShowModal(true);
+                setSecretError("");
+                setSecretInput("");
+              }}
+              className="rounded-lg bg-amber-400/90 hover:bg-amber-300 text-black font-semibold px-4 py-1.5 transition"
+            >
+              CODES
+            </button>
+          </div>
         )}
       </div>
 
       {/* Title */}
       <motion.h1
-        className="text-5xl font-extrabold mb-6 text-gold drop-shadow-md text-center absolute top-32 md:static md:top-auto"
+        className="mt-6 text-center text-4xl md:text-5xl font-extrabold tracking-tight
+        bg-gradient-to-r from-amber-300 via-yellow-400 to-orange-300 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)]"
         animate={spinning ? { rotateY: [0, 90, 0] } : { rotateY: [0, 90, 0] }}
         transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
       >
         Dejny&apos;s Roulette
       </motion.h1>
 
-      {/* Balance & Secret Button */}
-      {session && (
-        <p className="absolute shadow-md hover:scale-110 transition-all duration-150 ease-in-out cursor-pointer top-16 left-4 px-4 py-2 bg-white text-black rounded-xl font-bold">
-          Balance: <span className="font-mono">{balance}</span>
-        </p>
-      )}
+      {/* Main grid */}
+      <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-[1fr_minmax(260px,330px)] items-center">
+        {/* Wheel Card */}
+        <div className="relative mx-auto aspect-square w-[min(90vw,540px)] rounded-3xl border border-white/10 bg-white/5 p-6 shadow-[0_0_60px_rgba(0,0,0,0.35)] backdrop-blur">
+          {/* radial glow */}
+          <div className="pointer-events-none absolute inset-0 rounded-3xl bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.10),transparent_55%)]" />
 
-      {/* SECRET BUTTON (toggles modal) */}
-      {session && (
-        <button
-          onClick={() => {
-            setShowModal(true);
-            setSecretError("");
-            setSecretInput("");
-          }}
-          className="absolute top-16 text-black font-semibold right-4 px-4 py-2 bg-white rounded-lg text-md hover:bg-gray-400 transition-colors"
-        >
-          CODES
-        </button>
-      )}
+          <div className="relative h-full w-full flex items-center justify-center">
+            <div className="relative h-[88%] w-[88%] rounded-full border-8 border-dotted border-white/15 flex items-center justify-center text-lg sm:text-sm md:text-base lg:text-lg font-bold">
+              {wheelNumbers.map((num, index) => (
+                <motion.div
+                  key={`${num}-${index}`}
+                  className={`absolute flex items-center justify-center rounded-full border-2
+                    shadow-[0_4px_12px_rgba(0,0,0,0.45)] text-white
+                    sm:w-7 sm:h-7 md:w-9 md:h-9 lg:w-10 lg:h-10 text-[12px] md:text-sm
+                    ${getColor(num, index === highlightIndex)} ${getBorderColor(
+                    num
+                  )}`}
+                  style={{
+                    transform: `rotate(${
+                      (index / wheelNumbers.length) * 360
+                    }deg) translateY(-${translateY}px) rotate(-${
+                      (index / wheelNumbers.length) * 360
+                    }deg)`,
+                  }}
+                >
+                  {num}
+                </motion.div>
+              ))}
 
-      {/* ROULETTE WHEEL */}
-      <div className="relative mt-20 md:mt-0 sm:w-[300px] sm:h-[300px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px] flex items-center justify-center">
-        <div className="md:absolute mt-80 md:mt-0 w-full h-full border-8 border-dotted rounded-full flex items-center justify-center text-lg sm:text-sm md:text-base lg:text-lg font-bold">
-          {wheelNumbers.map((num, index) => (
-            <motion.div
-              key={num}
-              className={`absolute p-2 sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 flex items-center justify-center text-sm sm:text-[12px] md:text-md lg:text-base font-bold rounded-full border-2
-                ${getColor(num, index === highlightIndex)} ${getBorderColor(num)}`}
-              style={{
-                transform: `rotate(${
-                  (index / wheelNumbers.length) * 360
-                }deg) translateY(-${translateY}px) rotate(-${
-                  (index / wheelNumbers.length) * 360
-                }deg)`,
-              }}
-            >
-              {num}
-            </motion.div>
-          ))}
+              {/* Center (Result) */}
+              <motion.div
+                className={`z-10 flex h-24 w-24 items-center justify-center rounded-full border-4 font-extrabold text-3xl
+                  ${getColor(spinning ? null : result)} ${getBorderColor(
+                  spinning ? null : result
+                )}`}
+                animate={
+                  spinning
+                    ? { scale: [1, 1.06, 1], opacity: [0.9, 1, 0.9] }
+                    : { scale: [1.08, 1] }
+                }
+                transition={
+                  spinning
+                    ? { repeat: Infinity, duration: 0.9, ease: "easeInOut" }
+                    : { duration: 0.25, ease: "easeOut" }
+                }
+              >
+                {spinning ? "" : result !== null ? result : ""}
+              </motion.div>
 
-          {/* CENTER (RESULT) */}
-          <div className="relative w-full h-full flex items-center justify-center">
-            <motion.div
-              className={`w-20 h-20 flex items-center justify-center text-white rounded-full font-bold text-2xl 
-                ${getColor(spinning ? null : result)} ${getBorderColor(spinning ? null : result)} border-4`}
-              animate={
-                spinning
-                  ? { scale: [1, 1.1, 1], opacity: [0.8, 1, 0.8] }
-                  : { scale: [1.2, 1] }
-              }
-              transition={
-                spinning
-                  ? { repeat: Infinity, duration: 0.8, ease: "easeInOut" }
-                  : { duration: 0.3, ease: "easeOut" }
-              }
-            >
-              {spinning ? "" : result !== null ? result : ""}
-            </motion.div>
+              {/* Pointer */}
+            </div>
           </div>
+        </div>
+
+        {/* Betting Card */}
+        <div className="md:sticky md:top-6">
+          {session ? (
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-[0_0_40px_rgba(0,0,0,0.35)] backdrop-blur">
+              <Betting
+                balance={balance}
+                betAmount={betAmount}
+                setBetAmount={setBetAmount}
+                betType={betType}
+                setBetType={setBetType}
+                betValue={betValue}
+                setBetValue={setBetValue}
+                numberCount={wheelNumbers.length}
+                spinning={spinning}
+              />
+
+              {/* Spin button */}
+              <div className="relative mt-4 flex flex-col items-center group">
+                <Button
+                  onClick={() => {
+                    const button = document.activeElement as HTMLButtonElement;
+                    if (button) button.disabled = true;
+                    placeBet();
+                  }}
+                  className="w-full rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 px-6 py-3 font-semibold text-black shadow-[0_12px_30px_rgba(250,204,21,0.25)] hover:shadow-[0_16px_36px_rgba(250,204,21,0.35)] transition disabled:opacity-50"
+                  disabled={
+                    spinning ||
+                    betAmount <= 0 ||
+                    betValue === null ||
+                    betAmount > balance
+                  }
+                >
+                  {spinning ? "Spinning..." : "Spin the Wheel"}
+                </Button>
+
+                {(spinning ||
+                  betAmount <= 0 ||
+                  betValue === null ||
+                  betAmount > balance) && (
+                  <div className="pointer-events-none mt-2 w-full rounded-md border border-white/10 bg-black/70 p-2 text-center text-xs text-white/80 opacity-0 backdrop-blur transition-opacity duration-300 group-hover:opacity-100">
+                    {spinning
+                      ? "Wait! The wheel is already spinning..."
+                      : betAmount <= 0
+                      ? "You must place a bet before spinning!"
+                      : betValue === null
+                      ? "Select a bet type before spinning!"
+                      : betAmount > balance
+                      ? "Not enough balance for this bet!"
+                      : ""}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-center text-white/80 backdrop-blur">
+              Sign in to place bets.
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Betting Component */}
-      <div className="relative mt-40 sm:mt-64 md:absolute md:left-0">
-        {session && (
-          <Betting
-            balance={balance}
-            betAmount={betAmount}
-            setBetAmount={setBetAmount}
-            betType={betType}
-            setBetType={setBetType}
-            betValue={betValue}
-            setBetValue={setBetValue}
-            numberCount={wheelNumbers.length}
-            spinning={spinning}
-          />
-        )}
-      </div>
-
-      {/* SPIN BUTTON */}
-      <div className="relative flex flex-col items-center group">
-        <Button
-          onClick={() => {
-            const button = document.activeElement as HTMLButtonElement;
-            if (button) button.disabled = true;
-            placeBet();
-          }}
-          className="mt-8 px-6 mb-8 md:mb-0 py-3 bg-gold text-black font-semibold rounded-xl shadow-lg hover:shadow-2xl transition duration-300 ease-in-out disabled:opacity-50 relative"
-          disabled={spinning || betAmount <= 0 || betValue === null || betAmount > balance}
-        >
-          {spinning ? "Spinning..." : "Spin the Wheel"}
-        </Button>
-
-        {/* Tooltip if disabled */}
-        {(spinning || betAmount <= 0 || betValue === null || betAmount > balance) && (
-          <div className="absolute bottom-[35px] bg-black text-white text-xs p-2 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            {spinning
-              ? "Wait! The wheel is already spinning..."
-              : betAmount <= 0
-              ? "You must place a bet before spinning!"
-              : betValue === null
-              ? "Select a bet type before spinning!"
-              : betAmount > balance
-              ? "Not enough balance for this bet!"
-              : ""}
-          </div>
-        )}
-      </div>
-
-      {/* HISTORY */}
-      <div className="absolute top-4 right-4 md:bottom-4 flex gap-1 sm:gap-2 flex-wrap sm:flex-nowrap">
-        {history.map((num, index) => (
-          <div
-            key={index}
-            className={`flex items-center justify-center text-sm sm:text-lg font-bold rounded-full border-2 
-                        w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10
-                        ${getColor(num)} ${getBorderColor(num)}`}
-          >
-            {num}
-          </div>
-        ))}
-      </div>
+      {/* History */}
+      {history.length > 0 && (
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+          {history.map((num, index) => (
+            <div
+              key={`${num}-${index}`}
+              className={`flex h-9 w-9 items-center justify-center rounded-full border-2 text-sm font-bold shadow
+                ${getColor(num)} ${getBorderColor(num)}`}
+              title={`Last #${index + 1}`}
+            >
+              {num}
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* SECRET MODAL */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-70">
-          <div className="bg-white p-4 rounded-md w-[300px] relative">
-            <h2 className="text-lg font-bold mb-2 text-black">Enter Secret Phrase</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="relative w-[min(92vw,380px)] rounded-2xl border border-white/10 bg-neutral-900 p-5 text-white shadow-2xl">
+            <h2 className="mb-2 text-lg font-bold">Enter Secret Phrase</h2>
             <input
-              className="w-full px-2 py-1 border border-gray-300 rounded-md mb-2 text-black"
+              className="mb-2 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none placeholder:text-white/40 focus:border-amber-400"
               type="text"
               value={secretInput}
               onChange={(e) => setSecretInput(e.target.value)}
               placeholder="Type your phrase..."
             />
-            {secretError && <p className="text-red-600 text-sm mb-2">{secretError}</p>}
+            {secretError && (
+              <p className="mb-2 text-sm text-red-400">{secretError}</p>
+            )}
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-3 py-1 border rounded-md hover:bg-gray-200 text-black"
+                className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm hover:bg-white/10"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSecretSubmit}
-                className="px-4 py-2 bg-white border-gray-200 border text-black font-semibold rounded-md hover:bg-gray-200"
+                className="rounded-lg bg-amber-400 px-4 py-1.5 text-sm font-semibold text-black hover:bg-amber-300"
               >
                 $$$$$
               </button>
