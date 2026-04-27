@@ -1,5 +1,6 @@
 import RouletteWheel from "./components/Roulette";
 import Head from "next/head";
+import Link from "next/link";
 
 export default function Page() {
   return (
@@ -49,9 +50,15 @@ export default function Page() {
           content="https://roulette.dejny.eu/roulette.png"
         />
 
+        {/* Canonical */}
+        <link rel="canonical" href="https://roulette.dejny.eu/" />
+
         {/* Favicon & App Icons */}
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/roulette.png" />
+
+        {/* Sitemap reference */}
+        <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 
         {/* Manifest (optional for PWA) */}
         <link rel="manifest" href="/manifest.json" />
@@ -68,6 +75,33 @@ export default function Page() {
         <div className="mx-auto max-w-7xl px-4 py-8">
           <RouletteWheel />
         </div>
+
+        <footer className="mx-auto max-w-7xl px-4 py-6 mt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-4 text-xs text-white/40">
+          <span>
+            Built by{" "}
+            <a
+              href="https://dejny.eu"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/60 hover:text-amber-300 transition-colors"
+            >
+              Dejny
+            </a>
+          </span>
+          <nav className="flex gap-4">
+            <Link href="/" className="hover:text-white/70 transition-colors">
+              Home
+            </Link>
+            <a
+              href="https://github.com/dejny"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white/70 transition-colors"
+            >
+              GitHub
+            </a>
+          </nav>
+        </footer>
       </div>
     </>
   );
